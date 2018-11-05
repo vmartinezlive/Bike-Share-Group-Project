@@ -16,9 +16,13 @@ Station.prototype.setStationData = function(stationData) {
   this.intersection = [dataObject.lat, dataObject.lon];
 }
 
-Station.prototype.setBikeData = function(data) {
-  // set bike data
+Station.prototype.setBikeData = function(bikeData) {
+  var dataBikeObject = JSON.parse(bikeData);
+  this.bikeCount = dataBikeObject.num_bikes_available;
+  this.rackCount = dataBikeObject.num_docks_available;
 }
+
+
 
 // Business logic Map
 function Map (){
@@ -88,33 +92,38 @@ var station4BikeData = '{"station_id":"hub_1563","num_bikes_available":5,"num_bi
 // User interface logic
 var map = new Map();
 
-function setMapLocation(localMap) {
-  var mymap = L.map('mapid').setView(localMap.getCenter(), localMap.getZoom());
+function initializeMapDisplay(center, zoom) {
+  var mapDisplay = L.map('mapid').setView(center, zoom);
 
   L.tileLayer('https://stamen-tiles-{s}.a.ssl.fastly.net/toner-lite/{z}/{x}/{y}.png', {
     attribution: '&copy; <a id="home-link" target="_top" href="../">Map tiles</a> by <a target="_top" href="http://stamen.com">Stamen Design</a>, under <a target="_top" href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a>. Data by <a target="_top" href="http://openstreetmap.org">OpenStreetMap</a>, under <a target="_top" href="http://creativecommons.org/licenses/by-sa/3.0">CC BY SA</a>.',
     maxZoom: 18,
-  }).addTo(mymap);
+  }).addTo(mapDisplay);
 }
 
 $(function() {
   var portlandDowntown = [45.523360, -122.681237];
   map.setCenter(portlandDowntown);
   map.setZoom(15);
-  setMapLocation(map);
+  initializeMapDisplay(map.getCenter(), map.getZoom());
 
   var station0 = new Station();
   station0.setStationData(station0Data);
+  station0.setBikeData(station0BikeData);
   map.addStation(station0);
+
   var station1 = new Station();
   station1.setStationData(station1Data);
   map.addStation(station1);
+
   var station2 = new Station();
   station2.setStationData(station2Data);
   map.addStation(station2);
+
   var station3 = new Station();
   station3.setStationData(station3Data);
   map.addStation(station3);
+
   var station4 = new Station();
   station4.setStationData(station4Data);
   map.addStation(station4);
