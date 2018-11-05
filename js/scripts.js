@@ -107,24 +107,13 @@ $(function() {
   map.setZoom(15);
   initializeMapDisplay(map.getCenter(), map.getZoom());
 
-  var station0 = new Station();
-  station0.setStationData(station0Data);
-  station0.setBikeData(station0BikeData);
-  map.addStation(station0);
-
-  var station1 = new Station();
-  station1.setStationData(station1Data);
-  map.addStation(station1);
-
-  var station2 = new Station();
-  station2.setStationData(station2Data);
-  map.addStation(station2);
-
-  var station3 = new Station();
-  station3.setStationData(station3Data);
-  map.addStation(station3);
-
-  var station4 = new Station();
-  station4.setStationData(station4Data);
-  map.addStation(station4);
+  var stationsData = [station0Data, station1Data, station2Data, station3Data, station4Data];
+  var bikesData = [station0BikeData, station1BikeData, station2BikeData, station3BikeData, station4BikeData];
+  for (var i = 0; i < stationsData.length; i++) {
+    var station = new Station();
+    station.setStationData(stationsData[i]);
+    station.setBikeData(bikesData[i]);
+    map.addStation(station);
+    console.log(map);
+  }
 });
