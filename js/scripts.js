@@ -8,38 +8,17 @@ function Station (){
   this.rackCount = 0
 }
 
-Station.prototype.setId = function(id) {
-  this.id = id;
+Station.prototype.setStationData = function(stationData) {
+  var dataObject = JSON.parse(stationData);
+  this.name = dataObject.name;
+  this.address = dataObject.address;
+  this.id = dataObject.station_id;
+  this.intersection = [dataObject.lat, dataObject.lon];
 }
-// STATION_STATUS_GBFS: "'http://biketownpdx.socialbicycles.com/opendata/station_status.json'",
-// STATION_INFORMATION_GBFS: "'http://biketownpdx.socialbicycles.com/opendata/station_information.json'",
 
-/*
-{"station_id":"hub_1576","name":"SW 3rd at Morrison","region_id":"region_241","lon":-122.67558217048645,"lat":45.51803881572945,"address":"718-732 Southwest 3rd Avenue, Portland","rental_methods":
-
-{"station_id":"hub_1576","num_bikes_available":5,"num_bikes_disabled":0,"num_docks_available":11,"is_installed":1,"is_renting":1,"is_returning":1,"last_reported":1541445514},
-
-
-{"station_id":"hub_1561","name":"NW Johnson at Jamison Square","region_id":"region_241","lon":-122.68201947212219,"lat":45.52863659670261,"address":"718 Northwest 11th Avenue, Portland","rental_methods":
-
-{"station_id":"hub_1561","num_bikes_available":4,"num_bikes_disabled":0,"num_docks_available":13,"is_installed":1,"is_renting":1,"is_returning":1,"last_reported":1541445514},
-
-
-{"station_id":"hub_1588","name":"NW Couch at 11th","region_id":"region_241","lon":-122.68181294202805,"lat":45.523741513819246,"address":"1037 Northwest Couch Street, Portland","rental_methods":
-
-{"station_id":"hub_1588","num_bikes_available":8,"num_bikes_disabled":0,"num_docks_available":10,"is_installed":1,"is_renting":1,"is_returning":1,"last_reported":1541445514},
-
-
-{"station_id":"hub_1535","name":"SW Park at Portland Art Museum","region_id":"region_241","lon":-122.68331229686736,"lat":45.515923530681164,"address":"1315 Southwest Park Avenue, Portland","rental_methods":
-
-{"station_id":"hub_1535","num_bikes_available":5,"num_bikes_disabled":0,"num_docks_available":11,"is_installed":1,"is_renting":1,"is_returning":1,"last_reported":1541445514},
-
-
-{"station_id":"hub_1563","name":"NW 23rd at Overton","region_id":"region_241","lon":-122.69863039255142,"lat":45.53211645029155,"address":"1310 Northwest 23rd Avenue, Portland","rental_methods":
-
-{"station_id":"hub_1563","num_bikes_available":5,"num_bikes_disabled":0,"num_docks_available":9,"is_installed":1,"is_renting":1,"is_returning":1,"last_reported":1541445514},
-
-*/
+Station.prototype.setBikeData = function(data) {
+  // set bike data
+}
 
 // Business logic Map
 function Map (){
@@ -78,9 +57,33 @@ Map.prototype.zoomOut = function() {
   }
 }
 
+Map.prototype.addStation = function(station) {
+  this.stations.push(station);
+}
+
 Map.prototype.getStations = function() {
   return this.stations;
 }
+
+
+// Test data
+// STATION_STATUS_GBFS: "'http://biketownpdx.socialbicycles.com/opendata/station_status.json'",
+// STATION_INFORMATION_GBFS: "'http://biketownpdx.socialbicycles.com/opendata/station_information.json'",
+var station0Data = '{"station_id":"hub_1576","name":"SW 3rd at Morrison","region_id":"region_241","lon":-122.67558217048645,"lat":45.51803881572945,"address":"718-732 Southwest 3rd Avenue, Portland","rental_methods":["KEY","APPLEPAY","ANDROIDPAY","TRANSITCARD","ACCOUNTNUMBER","PHONE","CREDITCARD"]}';
+var station0BikeData = '{"station_id":"hub_1576","num_bikes_available":5,"num_bikes_disabled":0,"num_docks_available":11,"is_installed":1,"is_renting":1,"is_returning":1,"last_reported":1541445514}';
+
+var station1Data = '{"station_id":"hub_1561","name":"NW Johnson at Jamison Square","region_id":"region_241","lon":-122.68201947212219,"lat":45.52863659670261,"address":"718 Northwest 11th Avenue, Portland","rental_methods":["KEY","APPLEPAY","ANDROIDPAY","TRANSITCARD","ACCOUNTNUMBER","PHONE","CREDITCARD"]}';
+var station1BikeData = '{"station_id":"hub_1561","num_bikes_available":4,"num_bikes_disabled":0,"num_docks_available":13,"is_installed":1,"is_renting":1,"is_returning":1,"last_reported":1541445514}';
+
+var station2Data = '{"station_id":"hub_1588","name":"NW Couch at 11th","region_id":"region_241","lon":-122.68181294202805,"lat":45.523741513819246,"address":"1037 Northwest Couch Street, Portland","rental_methods":["KEY","APPLEPAY","ANDROIDPAY","TRANSITCARD","ACCOUNTNUMBER","PHONE"]}';
+var station2BikeData = '{"station_id":"hub_1588","num_bikes_available":8,"num_bikes_disabled":0,"num_docks_available":10,"is_installed":1,"is_renting":1,"is_returning":1,"last_reported":1541445514}';
+
+var station3Data = '{"station_id":"hub_1535","name":"SW Park at Portland Art Museum","region_id":"region_241","lon":-122.68331229686736,"lat":45.515923530681164,"address":"1315 Southwest Park Avenue, Portland","rental_methods":["KEY","APPLEPAY","ANDROIDPAY","TRANSITCARD","ACCOUNTNUMBER","PHONE"]}';
+var station3BikeData = '{"station_id":"hub_1535","num_bikes_available":5,"num_bikes_disabled":0,"num_docks_available":11,"is_installed":1,"is_renting":1,"is_returning":1,"last_reported":1541445514}';
+
+var station4Data = '{"station_id":"hub_1563","name":"NW 23rd at Overton","region_id":"region_241","lon":-122.69863039255142,"lat":45.53211645029155,"address":"1310 Northwest 23rd Avenue, Portland","rental_methods":["KEY","APPLEPAY","ANDROIDPAY","TRANSITCARD","ACCOUNTNUMBER","PHONE"]}';
+var station4BikeData = '{"station_id":"hub_1563","num_bikes_available":5,"num_bikes_disabled":0,"num_docks_available":9,"is_installed":1,"is_renting":1,"is_returning":1,"last_reported":1541445514}';
+
 
 // User interface logic
 var map = new Map();
@@ -99,4 +102,20 @@ $(function() {
   map.setCenter(portlandDowntown);
   map.setZoom(15);
   setMapLocation(map);
-})
+
+  var station0 = new Station();
+  station0.setStationData(station0Data);
+  map.addStation(station0);
+  var station1 = new Station();
+  station1.setStationData(station1Data);
+  map.addStation(station1);
+  var station2 = new Station();
+  station2.setStationData(station2Data);
+  map.addStation(station2);
+  var station3 = new Station();
+  station3.setStationData(station3Data);
+  map.addStation(station3);
+  var station4 = new Station();
+  station4.setStationData(station4Data);
+  map.addStation(station4);
+});
