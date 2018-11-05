@@ -1,3 +1,12 @@
-#mapid { height: 180px;
-  
+.container{
+  display: flex;
+  flex-direction: row;
+  margin-top: 15%;
+}
+
+
+#mapid {
+  margin-left: 8%;
+  height: 800px;
+  width: 800px;
 }
