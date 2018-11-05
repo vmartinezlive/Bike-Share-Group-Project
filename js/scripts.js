@@ -10,8 +10,16 @@ Map.prototype.setCenter = function(latLong) {
   this.center = latLong;
 }
 
+Map.prototype.getCenter = function() {
+  return this.center;
+}
+
 Map.prototype.setZoom = function(level) {
   this.zoomLevel = level;
+}
+
+Map.prototype.getZoom = function() {
+  return this.zoomLevel;
 }
 
 Map.prototype.zoomIn = function() {
@@ -32,15 +40,18 @@ Map.prototype.zoomOut = function() {
 // User interface logic
 var map = new Map();
 
-$(function() {
-  map.setCenter([45.523360, -122.681237]);
-  map.setZoom(11);
-
-  var mymap = L.map('mapid').setView([51.505, -0.09], 13);
+function setMapLocation(localMap) {
+  var mymap = L.map('mapid').setView(localMap.getCenter(), localMap.getZoom());
 
   L.tileLayer('https://stamen-tiles-{s}.a.ssl.fastly.net/toner-lite/{z}/{x}/{y}.png', {
     attribution: '&copy; <a id="home-link" target="_top" href="../">Map tiles</a> by <a target="_top" href="http://stamen.com">Stamen Design</a>, under <a target="_top" href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a>. Data by <a target="_top" href="http://openstreetmap.org">OpenStreetMap</a>, under <a target="_top" href="http://creativecommons.org/licenses/by-sa/3.0">CC BY SA</a>.',
     maxZoom: 18,
   }).addTo(mymap);
+}
 
+$(function() {
+  var portlandDowntown = [45.523360, -122.681237];
+  map.setCenter(portlandDowntown);
+  map.setZoom(15);
+  setMapLocation(map);
 })
