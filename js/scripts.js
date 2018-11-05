@@ -94,9 +94,23 @@ function setMapLocation(localMap) {
   }).addTo(mymap);
 }
 
+
+function listStations(allStations) {
+  var htmlForStationList = "";
+  allStations.forEach(function(station){
+  htmlForStationList += "<li>" + station.name + "</li>";
+  });
+  $("#stations").html.(htmlForStationList);
+}
+
+function matchAndListStations()
+
 $(function() {
   var portlandDowntown = [45.523360, -122.681237];
   map.setCenter(portlandDowntown);
   map.setZoom(15);
   setMapLocation(map);
+  var stationList = [];
+  stationList = map.getStations();
+  listStations(stationList);
 })
