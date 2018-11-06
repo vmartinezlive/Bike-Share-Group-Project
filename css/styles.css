@@ -4,9 +4,17 @@
   margin-top: 15%;
 }
 
+.column-left {
+  flex-direction: column;
+}
+
 
 #mapid {
   margin-left: 8%;
   height: 800px;
   width: 800px;
+}
+
+.station-details {
+  display: none;
 }

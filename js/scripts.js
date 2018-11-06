@@ -15,13 +15,12 @@ Station.prototype.setStationData = function(stationData) {
   this.id = dataObject.station_id;
   this.intersection = [dataObject.lat, dataObject.lon];
 }
-<<<<<<< HEAD
-=======
+
 
 Station.prototype.setBikeData = function(data) {
   // set bike data
 }
->>>>>>> master
+
 
 // Business logic Map
 function Map (){
@@ -68,6 +67,13 @@ Map.prototype.getStations = function() {
   return this.stations;
 }
 
+Map.prototype.findStation = function(id){
+  for (var i = 0; i <this.stations.length; i++){
+    if (this.stations[i].id === id) {
+      return this.stations[i];
+    }
+  }
+}
 
 // Test data
 // STATION_STATUS_GBFS: "'http://biketownpdx.socialbicycles.com/opendata/station_status.json'",
@@ -104,9 +110,25 @@ function setMapLocation(localMap) {
 function listStations(allStations) {
   var htmlForStationList = "";
   allStations.forEach(function(station){
-  htmlForStationList += "<li>" + station.name + "</li>";
+  htmlForStationList += "<li id =" + station.id + ">" + station.name + "</li>";
   });
-  $("#stations").html.(htmlForStationList);
+  $("#stations").html(htmlForStationList);
+  attachStationListeners()
+}
+
+function attachStationListeners(){
+  $("#stations").on("click", "li", function(){
+    showStationDetails(this.id);
+  });
+}
+
+function showStationDetails(stationId){
+  var station = map.findStation(stationId)
+  $(".station-name").html(station.name)
+  $(".station-address").html(station.address)
+  $(".station-bike-count").html(station.bikeCount)
+  $(".station-rack-count").html(station.rackCount)
+  $(".station-details").show();
 }
 
 
