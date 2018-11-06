@@ -72,11 +72,17 @@ Map.prototype.getStations = function() {
 }
 
 Map.prototype.findStation = function(id){
-  for (var i = 0; i <this.stations.length; i++){
+  for (var i = 0; i < this.stations.length; i++){
     if (this.stations[i].id === id) {
       return this.stations[i];
     }
+    return false;
   }
+}
+
+function User(){
+  this.name = name;
+  this.favoriteStations = [];
 }
 
 // Test data
@@ -100,6 +106,7 @@ var station4BikeData = '{"station_id":"hub_1563","num_bikes_available":5,"num_bi
 
 // User interface logic
 var map = new Map();
+var user = new User();
 
 function initializeMapDisplay(center, zoom) {
   var mapDisplay = L.map('mapid').setView(center, zoom);
@@ -117,7 +124,7 @@ function listStations(allStations) {
   htmlForStationList += "<li id =" + station.id + ">" + station.name + "</li>";
   });
   $("#stations").html(htmlForStationList);
-  attachStationListeners()
+  attachStationListeners();
 }
 
 function attachStationListeners(){
@@ -128,6 +135,7 @@ function attachStationListeners(){
 
 function showStationDetails(stationId){
   var station = map.findStation(stationId)
+  user.favoriteStations.push(station);
   $(".station-name").html(station.name)
   $(".station-address").html(station.address)
   $(".station-bike-count").html(station.bikeCount)
@@ -150,7 +158,16 @@ $(function() {
     station.setStationData(stationsData[i]);
     station.setBikeData(bikesData[i]);
     map.addStation(station);
-    console.log(map);
+
+    listStations(map.stations)
+
+    $("form#input-name").submit(function(event){
+      event.preventDefault();
+      var nameInput = $("#name").val();
+      user.name = nameInput;
+    });
+
+    // console.log(map);
   }
 
 });
