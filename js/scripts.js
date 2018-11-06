@@ -86,6 +86,18 @@ function User(){
   this.favoriteStations = [];
 }
 
+User.prototype.deleteStation = function(id){
+  for(var i = 0; i < this.favoriteStations.length; i++){
+    if (this.favoriteStations[i]){
+      if (this.favoriteStations[i].id === id){
+        delete this.favoriteStations[i];
+        return true;
+      }
+    }
+  }
+  return false;
+}
+
 // Test data
 // STATION_STATUS_GBFS: "'http://biketownpdx.socialbicycles.com/opendata/station_status.json'",
 // STATION_INFORMATION_GBFS: "'http://biketownpdx.socialbicycles.com/opendata/station_information.json'",
@@ -129,13 +141,6 @@ function listStations(allStations) {
     htmlForStationList += "<li id =" + station.id + ">" + station.name + "</li>";
   });
   $("ul#indvStation").html(htmlForStationList);
-  attachStationListeners();
-}
-
-function attachStationListeners(){
-  $("ul#indvStation").on("click", "li", function(){
-    showStationDetails(this.id);
-  });
 }
 
 function showStationDetails(stationId){
@@ -151,33 +156,31 @@ function showStationDetails(stationId){
   }
 }
 
-// var displayedStationId = map.station.id
-
 function addToFavorites(detailsId){
-  console.log("detailsId=", detailsId.text());
   var currentStation = map.findStation(detailsId.text());
   user.favoriteStations.push(currentStation);
   $(".favorite-stations-list").show();
   $(".users-name").html(user.name + "'s " + " ");
-  var nameOfFavoriteStations = user.favoriteStations.name
-  appendFavoriteStations(nameOfFavoriteStations)
-
+  updateFavoriteStations();
 }
 
-function appendFavoriteStations(){
-   $("#favorite-stations-list-name").empty();
- for(i = 0; i < user.favoriteStations.length; i++){
-  $("#favorite-stations-list-name").append("<li>" + user.favoriteStations[i].name + "</li>");
+function updateFavoriteStations() {
+
+  $("#favorite-stations-list-name").empty();
+  for(var i = 0; i < user.favoriteStations.length; i++){
+    if(user.favoriteStations[i]) {
+      $("#favorite-stations-list-name").append("<li>" + user.favoriteStations[i].name + "<input type= 'button' class='deleteButton' id='" + user.favoriteStations[i].id +"' value='Delete'>" +" </li>");
+    }
   }
 }
 
 function makeIcon(url, width, height, anchorX, anchorY) {
   var icon = L.icon({
-      iconUrl: url,
+    iconUrl: url,
 
-      iconSize: [width, height],
-      iconAnchor: [anchorX, anchorY],
-      popupAnchor: [anchorX, -10]
+    iconSize: [width, height],
+    iconAnchor: [anchorX, anchorY],
+    popupAnchor: [anchorX, -10]
   });
   return icon;
 }
@@ -232,10 +235,20 @@ $(function() {
 
   var detailsId = $("#station-id");
   $("#favorite-button").click(function(){
-    console.log("working");
     addToFavorites(detailsId);
     // add to favorite station ul
   });
+
+  $("ul#indvStation").on("click", "li", function(){
+    showStationDetails(this.id);
+  });
+
+  $("#favorite-stations-list-name").on("click", ".deleteButton", function (){
+    console.log("delete ", this.id);
+    user.deleteStation(this.id);
+    updateFavoriteStations();
+  });
+
   var selectedIcon = makeIcon('./img/red.png', 64, 80, 32, 80);
   var favoriteIcon = makeIcon('./img/blue.png', 64, 80, 32, 80);
   var updatedIcon = makeIcon('./img/yellow.png', 50, 50, 25, 25);
