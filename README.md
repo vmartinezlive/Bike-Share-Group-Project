@@ -51,6 +51,7 @@ If you have any issues or questions, please email me at paw145@humboldt.edu
 2. Use better tiles
 3. User can create an account and save their favorites.
 4. Add reserve functionality.
+5. Remove empty arrays in favorite stations (sort and then pop out empty arrays)
 
 
 
