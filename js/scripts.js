@@ -106,19 +106,22 @@ var station4BikeData = '{"station_id":"hub_1563","num_bikes_available":5,"num_bi
 
 
 // User interface logic
-var map = new Map();
-var user = new User();
+function MapDisplay(){
+  this.leafletMap = null;
+}
 
-function initializeMapDisplay(center, zoom) {
-  var mapDisplay = L.map('mapid').setView(center, zoom);
+MapDisplay.prototype.initialize = function(divId, center, zoom) {
+  this.leafletMap = L.map(divId).setView(center, zoom);
 
   L.tileLayer('https://stamen-tiles-{s}.a.ssl.fastly.net/toner-lite/{z}/{x}/{y}.png', {
     attribution: '&copy; <a id="home-link" target="_top" href="../">Map tiles</a> by <a target="_top" href="http://stamen.com">Stamen Design</a>, under <a target="_top" href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a>. Data by <a target="_top" href="http://openstreetmap.org">OpenStreetMap</a>, under <a target="_top" href="http://creativecommons.org/licenses/by-sa/3.0">CC BY SA</a>.',
     maxZoom: 18,
-  }).addTo(mapDisplay);
-
-  return mapDisplay;
+  }).addTo(this.leafletMap);
 }
+
+var map = new Map();
+var user = new User();
+var mapDisplay = new MapDisplay();
 
 function listStations(allStations) {
   var htmlForStationList = "";
@@ -192,7 +195,7 @@ $(function() {
   map.setCenter(portlandDowntown);
   map.setZoom(15);
 
-  var mapDisplay = initializeMapDisplay(map.getCenter(), map.getZoom());
+  mapDisplay.initialize("mapid", map.getCenter(), map.getZoom());
 
   var stationsData = [station0Data, station1Data, station2Data, station3Data, station4Data];
   var bikesData = [station0BikeData, station1BikeData, station2BikeData, station3BikeData, station4BikeData];
@@ -211,12 +214,9 @@ $(function() {
     user.name = nameInput;
   });
 
-  map.stations[0].selected = true;
-  map.stations[1].favorite = true;
-  map.stations[2].updated = true;
   var selectedIcon = makeIcon('./img/red.png', 64, 80, 32, 80);
   var favoriteIcon = makeIcon('./img/blue.png', 64, 80, 32, 80);
   var updatedIcon = makeIcon('./img/yellow.png', 50, 50, 25, 25);
   var icon = makeIcon('./img/green.png', 50, 50, 25, 25);
-  drawStationMarkers(mapDisplay, map.stations, selectedIcon, favoriteIcon, updatedIcon, icon);
+  drawStationMarkers(mapDisplay.leafletMap, map.stations, selectedIcon, favoriteIcon, updatedIcon, icon);
 });
