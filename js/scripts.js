@@ -138,12 +138,15 @@ function attachStationListeners(){
 function showStationDetails(stationMatch){
   var station = map.findStation(stationMatch)
   user.favoriteStations.push(station);
+
   $(".station-name").html(station.name)
   $(".station-address").html(station.address)
   $(".station-bike-count").html(station.bikeCount)
   $(".station-rack-count").html(station.rackCount)
   $(".station-details").show();
 }
+
+
 
 
 
