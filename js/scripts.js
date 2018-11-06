@@ -154,7 +154,34 @@ MapDisplay.prototype.addStationMarkers = function(stations) {
     var marker = L.marker(stations[i].intersection, {icon: markerIcon});
     marker.station_id = stations[i].id
     marker.addTo(this.leafletMap).on("click", stationClick);
+
+    this.markers.push(marker);
   }
+}
+
+MapDisplay.prototype.findMarker = function(id){
+  for (var i = 0; i < this.markers.length; i++){
+    if (this.markers[i]) {
+      if (this.markers[i].station_id === id){
+        return this.markers[i];
+      }
+    }
+  }
+  return false;
+}
+
+MapDisplay.prototype.setIcon = function(marker, isSelected, isFavorite, isUpdated) {
+  if(marker) {
+    //marker.setIcon();
+  }
+  console.log("setIcon marker=", marker, "  isSelected=", isSelected);
+}
+
+MapDisplay.prototype.selectMarker = function(stationId) {
+  this.setIcon(this.selectedMarker, false, false, false);
+
+  this.selectedMarker = this.findMarker(stationId);
+  this.setIcon(this.selectedMarker, true, false, false);
 }
 
 var map = new Map();
@@ -178,6 +205,7 @@ function attachStationListeners(){
 
 function showStationDetails(stationId){
   var station = map.findStation(stationId);
+  mapDisplay.selectMarker(stationId);
 
   if(station) {
     $("#station-id").html(station.id)
