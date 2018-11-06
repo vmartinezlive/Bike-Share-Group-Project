@@ -70,11 +70,19 @@ Map.prototype.getStations = function() {
 }
 
 Map.prototype.findStation = function(id){
-  for (var i = 0; i <this.stations.length; i++){
-    if (this.stations[i].id === id) {
-      return this.stations[i];
+  for (var i = 0; i < this.stations.length; i++){
+    if (this.stations[i]) {
+      if (this.stations[i].id === id){
+        return this.stations[i];
+      }
     }
   }
+  return false;
+}
+
+function User(){
+  this.name = name;
+  this.favoriteStations = [];
 }
 
 // Test data
@@ -98,6 +106,7 @@ var station4BikeData = '{"station_id":"hub_1563","num_bikes_available":5,"num_bi
 
 // User interface logic
 var map = new Map();
+var user = new User();
 
 function initializeMapDisplay(center, zoom) {
   var mapDisplay = L.map('mapid').setView(center, zoom);
@@ -113,25 +122,31 @@ function initializeMapDisplay(center, zoom) {
 function listStations(allStations) {
   var htmlForStationList = "";
   allStations.forEach(function(station){
-  htmlForStationList += "<li id =" + station.id + ">" + station.name + "</li>";
+    htmlForStationList += "<li id =" + station.id + ">" + station.name + "</li>";
   });
-  $("#stations").html(htmlForStationList);
-  attachStationListeners()
+  $("ul#indvStation").html(htmlForStationList);
+  attachStationListeners();
 }
 
 function attachStationListeners(){
-  $("#stations").on("click", "li", function(){
+  $("ul#indvStation").on("click", "li", function(){
     showStationDetails(this.id);
   });
 }
 
-function showStationDetails(stationId){
-  var station = map.findStation(stationId)
+function showStationDetails(stationMatch){
+  var station = map.findStation(stationMatch)
+
+  $("#station-id").html(station.id)
   $(".station-name").html(station.name)
   $(".station-address").html(station.address)
   $(".station-bike-count").html(station.bikeCount)
   $(".station-rack-count").html(station.rackCount)
   $(".station-details").show();
+}
+
+function addToFavorites(station){
+  user.favoriteStations.push(station);
 }
 
 function makeSelectedIcon() {
@@ -182,6 +197,10 @@ function drawStationMarkers(mapDisplay, stations, selectedIcon, updatedIcon, ico
 
 
 
+
+
+
+
 $(function() {
   var portlandDowntown = [45.523360, -122.681237];
   map.setCenter(portlandDowntown);
@@ -198,6 +217,15 @@ $(function() {
     map.addStation(station);
   }
 
+
+  listStations(map.stations)
+
+  $("form#input-name").submit(function(event){
+    event.preventDefault();
+    var nameInput = $("#name").val();
+    user.name = nameInput;
+  });
+
   map.stations[0].selected = true;
   map.stations[4].selected = true;
   map.stations[2].updated = true;
@@ -206,4 +234,5 @@ $(function() {
   var updatedIcon = makeUpdatedIcon();
   var icon = makeIcon();
   drawStationMarkers(mapDisplay, map.stations, selectedIcon, updatedIcon, icon);
+
 });
