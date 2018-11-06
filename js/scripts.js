@@ -7,6 +7,7 @@ function Station (){
   this.bikeCount = 0,
   this.rackCount = 0,
   this.selected = false,
+  this.favorite = false,
   this.updated = false
 }
 
@@ -151,38 +152,15 @@ function addToFavorites(station){
   user.favoriteStations.push(station);
 }
 
-function makeSelectedIcon() {
-  var redIcon = L.icon({
-       iconUrl: './img/red.png',
+function makeIcon(url, width, height, anchorX, anchorY) {
+  var icon = L.icon({
+      iconUrl: url,
 
-      iconSize:     [64, 80], // size of the icon
-      iconAnchor:   [32, 80], // point of the icon which will correspond to marker's location
-      popupAnchor:  [32, -10] // point from which the popup should open relative to the iconAnchor
+      iconSize: [width, height],
+      iconAnchor: [anchorX, anchorY],
+      popupAnchor: [anchorX, -10]
   });
-
-  return redIcon;
-}
-
-function makeUpdatedIcon() {
-  var yellowIcon = L.icon({
-      iconUrl: './img/yellow.png',
-
-      iconSize: [50, 50],
-      iconAnchor: [25, 25],
-      popupAnchor: [25, -10]
-  });
-  return yellowIcon;
-}
-
-function makeIcon() {
-  var greenIcon = L.icon({
-      iconUrl: './img/green.png',
-
-      iconSize: [50, 50],
-      iconAnchor: [25, 25],
-      popupAnchor: [25, -10]
-  });
-  return greenIcon;
+  return icon;
 }
 
 function stationClick(event) {
@@ -192,13 +170,15 @@ function stationClick(event) {
   }
 }
 
-function drawStationMarkers(mapDisplay, stations, selectedIcon, updatedIcon, normalIcon) {
+function drawStationMarkers(mapDisplay, stations, selectedIcon, favoriteIcon, updatedIcon, normalIcon) {
   for(var i = 0; i < stations.length; i++) {
     var markerIcon = normalIcon;
-    if(stations[i].updated) {
-      markerIcon = updatedIcon;
-    } else if(stations[i].selected) {
+    if(stations[i].selected) {
       markerIcon = selectedIcon;
+    } else if(stations[i].favorite) {
+      markerIcon = favoriteIcon;
+    } else if(stations[i].updated) {
+      markerIcon = updatedIcon;
     }
 
     var marker = L.marker(stations[i].intersection, {icon: markerIcon});
@@ -232,11 +212,11 @@ $(function() {
   });
 
   map.stations[0].selected = true;
-  map.stations[4].selected = true;
+  map.stations[1].favorite = true;
   map.stations[2].updated = true;
-  map.stations[1].updated = true;
-  var selectedIcon = makeSelectedIcon();
-  var updatedIcon = makeUpdatedIcon();
-  var icon = makeIcon();
-  drawStationMarkers(mapDisplay, map.stations, selectedIcon, updatedIcon, icon);
+  var selectedIcon = makeIcon('./img/red.png', 64, 80, 32, 80);
+  var favoriteIcon = makeIcon('./img/blue.png', 64, 80, 32, 80);
+  var updatedIcon = makeIcon('./img/yellow.png', 50, 50, 25, 25);
+  var icon = makeIcon('./img/green.png', 50, 50, 25, 25);
+  drawStationMarkers(mapDisplay, map.stations, selectedIcon, favoriteIcon, updatedIcon, icon);
 });
