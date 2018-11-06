@@ -73,11 +73,13 @@ Map.prototype.getStations = function() {
 
 Map.prototype.findStation = function(id){
   for (var i = 0; i < this.stations.length; i++){
-    if (this.stations[i].id === id) {
-      return this.stations[i];
+    if (this.stations[i]) {
+      if (this.stations[i].id === id){
+        return this.stations[i];
+      }
     }
-    return false;
   }
+  return false;
 }
 
 function User(){
@@ -121,20 +123,20 @@ function initializeMapDisplay(center, zoom) {
 function listStations(allStations) {
   var htmlForStationList = "";
   allStations.forEach(function(station){
-  htmlForStationList += "<li id =" + station.id + ">" + station.name + "</li>";
+    htmlForStationList += "<li id =" + station.id + ">" + station.name + "</li>";
   });
-  $("#stations").html(htmlForStationList);
+  $("ul#indvStation").html(htmlForStationList);
   attachStationListeners();
 }
 
 function attachStationListeners(){
-  $("#stations").on("click", "li", function(){
+  $("ul#indvStation").on("click", "li", function(){
     showStationDetails(this.id);
   });
 }
 
-function showStationDetails(stationId){
-  var station = map.findStation(stationId)
+function showStationDetails(stationMatch){
+  var station = map.findStation(stationMatch)
   user.favoriteStations.push(station);
   $(".station-name").html(station.name)
   $(".station-address").html(station.address)
@@ -142,6 +144,8 @@ function showStationDetails(stationId){
   $(".station-rack-count").html(station.rackCount)
   $(".station-details").show();
 }
+
+
 
 
 $(function() {
@@ -158,16 +162,13 @@ $(function() {
     station.setStationData(stationsData[i]);
     station.setBikeData(bikesData[i]);
     map.addStation(station);
-
-    listStations(map.stations)
-
-    $("form#input-name").submit(function(event){
-      event.preventDefault();
-      var nameInput = $("#name").val();
-      user.name = nameInput;
-    });
-
-    // console.log(map);
   }
 
+  listStations(map.stations)
+
+  $("form#input-name").submit(function(event){
+    event.preventDefault();
+    var nameInput = $("#name").val();
+    user.name = nameInput;
+  });
 });
