@@ -21,7 +21,8 @@
         <form id="input-name">
           <label for="name">Name:</label>
           <input type="text" name="" value="" id="name"><br>
-          <label for="name">Pick Your Favorite Stations:</label><br>
+          <input type="submit" value="submit">
+
           <div id="stations">
             <ul>
             </ul>
@@ -35,10 +36,18 @@
         </div>
       </div>
       <div class="station-details">
+        <span class="hide-id" id="station-id"></span>
         <p>Name:<span class="station-name"></span></p>
         <p>Address:<span class="station-address"></span></p>
         <p>Bikes Available:<span class="station-bike-count"></span></p>
         <p>Racks Available:<span class="station-rack-count"></span></p>
+        <input type="button"  value="Add to favorites">
+      </div>
+      <div class="fav-stations">
+        <ul id="fav-stations-name">
+
+        </ul>
+
       </div>
     </div>
     <div id="mapid">
