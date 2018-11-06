@@ -108,6 +108,8 @@ var station4BikeData = '{"station_id":"hub_1563","num_bikes_available":5,"num_bi
 // User interface logic
 function MapDisplay(){
   this.leafletMap = null;
+  this.markers = [];
+  this.selectedMarker = null;
   this.selectedIcon = null;
   this.favoriteIcon = null;
   this.updatedIcon = null;
@@ -136,6 +138,23 @@ MapDisplay.prototype.makeIcon = function(url, width, height, anchorX, anchorY) {
     popupAnchor: [anchorX, -10]
   });
   return icon;
+}
+
+MapDisplay.prototype.addStationMarkers = function(stations) {
+  for(var i = 0; i < stations.length; i++) {
+    var markerIcon = this.icon;
+    if(stations[i].selected) {
+      markerIcon = this.selectedIcon;
+    } else if(stations[i].favorite) {
+      markerIcon = this.favoriteIcon;
+    } else if(stations[i].updated) {
+      markerIcon = this.updatedIcon;
+    }
+
+    var marker = L.marker(stations[i].intersection, {icon: markerIcon});
+    marker.station_id = stations[i].id
+    marker.addTo(this.leafletMap).on("click", stationClick);
+  }
 }
 
 var map = new Map();
@@ -188,7 +207,6 @@ function appendFavoriteStations(){
   }
 }
 
-
 function stationClick(event) {
   var id = event && event.target && event.target.station_id;
   if(id) {
@@ -196,29 +214,10 @@ function stationClick(event) {
   }
 }
 
-function drawStationMarkers(mapDisplay, stations, selectedIcon, favoriteIcon, updatedIcon, normalIcon) {
-  for(var i = 0; i < stations.length; i++) {
-    var markerIcon = normalIcon;
-    if(stations[i].selected) {
-      markerIcon = selectedIcon;
-    } else if(stations[i].favorite) {
-      markerIcon = favoriteIcon;
-    } else if(stations[i].updated) {
-      markerIcon = updatedIcon;
-    }
-
-    var marker = L.marker(stations[i].intersection, {icon: markerIcon});
-    marker.station_id = stations[i].id
-    marker.addTo(mapDisplay).on("click", stationClick);
-  }
-}
-
 $(function() {
   var portlandDowntown = [45.523360, -122.681237];
   map.setCenter(portlandDowntown);
   map.setZoom(15);
-
-  mapDisplay.initialize("mapid", map.getCenter(), map.getZoom());
 
   var stationsData = [station0Data, station1Data, station2Data, station3Data, station4Data];
   var bikesData = [station0BikeData, station1BikeData, station2BikeData, station3BikeData, station4BikeData];
@@ -228,8 +227,10 @@ $(function() {
     station.setBikeData(bikesData[i]);
     map.addStation(station);
   }
+  listStations(map.stations);
 
-  listStations(map.stations)
+  mapDisplay.initialize("mapid", map.getCenter(), map.getZoom());
+  mapDisplay.addStationMarkers(map.stations);
 
   $("form#input-name").submit(function(event){
     event.preventDefault();
@@ -243,5 +244,4 @@ $(function() {
     addToFavorites(detailsId);
     // add to favorite station ul
   });
-  drawStationMarkers(mapDisplay.leafletMap, map.stations, mapDisplay.selectedIcon, mapDisplay.favoriteIcon, mapDisplay.updatedIcon, mapDisplay.icon);
 });
