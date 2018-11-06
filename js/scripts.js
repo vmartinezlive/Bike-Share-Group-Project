@@ -6,7 +6,8 @@ function Station (){
   this.intersection = [0,0],
   this.bikeCount = 0,
   this.rackCount = 0,
-  this.selected = false
+  this.selected = false,
+  this.updated = false
 }
 
 Station.prototype.setStationData = function(stationData) {
@@ -135,15 +136,16 @@ function showStationDetails(stationId){
 
 function makeSelectedIcon() {
   var greenIcon = L.icon({
-       iconUrl: './img/greenDot.png',
+       iconUrl: './img/red.png',
 
-      iconSize:     [200, 200], // size of the icon
-      iconAnchor:   [100, 100], // point of the icon which will correspond to marker's location
+      iconSize:     [64, 80], // size of the icon
+      iconAnchor:   [32, 80], // point of the icon which will correspond to marker's location
       popupAnchor:  [50, -10] // point from which the popup should open relative to the iconAnchor
   });
 
   return greenIcon;
 }
+
 
 function drawStationMarkers(mapDisplay, stations, selectedIcon) {
   for(var i = 0; i < stations.length; i++) {
