@@ -135,23 +135,52 @@ function showStationDetails(stationId){
 }
 
 function makeSelectedIcon() {
-  var greenIcon = L.icon({
+  var redIcon = L.icon({
        iconUrl: './img/red.png',
 
       iconSize:     [64, 80], // size of the icon
       iconAnchor:   [32, 80], // point of the icon which will correspond to marker's location
-      popupAnchor:  [50, -10] // point from which the popup should open relative to the iconAnchor
+      popupAnchor:  [32, -10] // point from which the popup should open relative to the iconAnchor
   });
 
+  return redIcon;
+}
+
+function makeUpdatedIcon() {
+  var yellowIcon = L.icon({
+      iconUrl: './img/yellow.png',
+
+      iconSize: [50, 50],
+      iconAnchor: [25, 25],
+      popupAnchor: [25, -10]
+  });
+  return yellowIcon;
+}
+
+function makeIcon() {
+  var greenIcon = L.icon({
+      iconUrl: './img/green.png',
+
+      iconSize: [50, 50],
+      iconAnchor: [25, 25],
+      popupAnchor: [25, -10]
+  });
   return greenIcon;
 }
 
-
-function drawStationMarkers(mapDisplay, stations, selectedIcon) {
+function drawStationMarkers(mapDisplay, stations, selectedIcon, updatedIcon, icon) {
   for(var i = 0; i < stations.length; i++) {
-    L.marker(stations[i].intersection, {icon: selectedIcon}).addTo(mapDisplay);
+      if (stations[i].updated) {
+      L.marker(stations[i].intersection, {icon: updatedIcon}).addTo(mapDisplay);
+    } else  if (stations[i].selected) {
+      L.marker(stations[i].intersection, {icon: selectedIcon}).addTo(mapDisplay);
+    } else {
+      L.marker(stations[i].intersection, {icon: icon}).addTo(mapDisplay);
+    }
   }
 }
+
+
 
 $(function() {
   var portlandDowntown = [45.523360, -122.681237];
@@ -169,6 +198,12 @@ $(function() {
     map.addStation(station);
   }
 
+  map.stations[0].selected = true;
+  map.stations[4].selected = true;
+  map.stations[2].updated = true;
+  map.stations[1].updated = true;
   var selectedIcon = makeSelectedIcon();
-  drawStationMarkers(mapDisplay, map.stations, selectedIcon);
+  var updatedIcon = makeUpdatedIcon();
+  var icon = makeIcon();
+  drawStationMarkers(mapDisplay, map.stations, selectedIcon, updatedIcon, icon);
 });
