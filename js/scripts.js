@@ -134,29 +134,20 @@ function showStationDetails(stationId){
 }
 
 function makeSelectedIcon() {
-  // Custom icon
-  // var LeafIcon = L.Icon.extend({
-  //   options: {
-  //     iconSize:     [38, 95],
-  //     shadowSize:   [50, 64],
-  //     iconAnchor:   [22, 94],
-  //     shadowAnchor: [4, 62],
-  //     popupAnchor:  [-3, -76]
-  //   }
-  // });
-  // var greenIcon = new LeafIcon({
-  //   iconUrl: 'http://leafletjs.com/examples/custom-icons/leaf-green.png',
-  //   shadowUrl: 'http://leafletjs.com/examples/custom-icons/leaf-shadow.png'
-  // });
-  // return greenIcon;
+  var greenIcon = L.icon({
+       iconUrl: './img/greenDot.png',
 
-  // L.marker([51.5, -0.09], {icon: greenIcon}).addTo(map);
+      iconSize:     [200, 200], // size of the icon
+      iconAnchor:   [100, 100], // point of the icon which will correspond to marker's location
+      popupAnchor:  [50, -10] // point from which the popup should open relative to the iconAnchor
+  });
+
+  return greenIcon;
 }
 
-function drawStationMarkers(mapDisplay, stations) {
+function drawStationMarkers(mapDisplay, stations, selectedIcon) {
   for(var i = 0; i < stations.length; i++) {
-    var marker = L.marker(stations[i].intersection).addTo(mapDisplay);
-    console.log(marker);
+    L.marker(stations[i].intersection, {icon: selectedIcon}).addTo(mapDisplay);
   }
 }
 
@@ -177,5 +168,5 @@ $(function() {
   }
 
   var selectedIcon = makeSelectedIcon();
-  drawStationMarkers(mapDisplay, map.stations);
+  drawStationMarkers(mapDisplay, map.stations, selectedIcon);
 });
