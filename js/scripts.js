@@ -120,15 +120,87 @@ var station4BikeData = '{"station_id":"hub_1563","num_bikes_available":5,"num_bi
 // User interface logic
 function MapDisplay(){
   this.leafletMap = null;
+  this.markers = [];
+  this.selectedMarker = null;
+  this.selectedIcon = null;
+  this.favoriteIcon = null;
+  this.updatedIcon = null;
+  this.icon = null;
 }
 
 MapDisplay.prototype.initialize = function(divId, center, zoom) {
   this.leafletMap = L.map(divId).setView(center, zoom);
-
   L.tileLayer('https://stamen-tiles-{s}.a.ssl.fastly.net/toner-lite/{z}/{x}/{y}.png', {
     attribution: '&copy; <a id="home-link" target="_top" href="../">Map tiles</a> by <a target="_top" href="http://stamen.com">Stamen Design</a>, under <a target="_top" href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a>. Data by <a target="_top" href="http://openstreetmap.org">OpenStreetMap</a>, under <a target="_top" href="http://creativecommons.org/licenses/by-sa/3.0">CC BY SA</a>.',
     maxZoom: 18,
   }).addTo(this.leafletMap);
+
+  this.selectedIcon = this.makeIcon('./img/red.png', 64, 80, 32, 80);
+  this.favoriteIcon = this.makeIcon('./img/blue.png', 64, 80, 32, 80);
+  this.updatedIcon = this.makeIcon('./img/yellow.png', 50, 50, 25, 25);
+  this.icon = this.makeIcon('./img/green.png', 50, 50, 25, 25);
+}
+
+MapDisplay.prototype.makeIcon = function(url, width, height, anchorX, anchorY) {
+  var icon = L.icon({
+    iconUrl: url,
+
+    iconSize: [width, height],
+    iconAnchor: [anchorX, anchorY],
+    popupAnchor: [anchorX, -10]
+  });
+  return icon;
+}
+
+MapDisplay.prototype.addStationMarkers = function(stations) {
+  for(var i = 0; i < stations.length; i++) {
+    var markerIcon = this.icon;
+    if(stations[i].selected) {
+      markerIcon = this.selectedIcon;
+    } else if(stations[i].favorite) {
+      markerIcon = this.favoriteIcon;
+    } else if(stations[i].updated) {
+      markerIcon = this.updatedIcon;
+    }
+
+    var marker = L.marker(stations[i].intersection, {icon: markerIcon});
+    marker.station_id = stations[i].id
+    marker.addTo(this.leafletMap).on("click", stationClick);
+
+    this.markers.push(marker);
+  }
+}
+
+MapDisplay.prototype.findMarker = function(id){
+  for (var i = 0; i < this.markers.length; i++){
+    if (this.markers[i]) {
+      if (this.markers[i].station_id === id){
+        return this.markers[i];
+      }
+    }
+  }
+  return false;
+}
+
+MapDisplay.prototype.setMarkerIcon = function(marker, isSelected, isFavorite, isUpdated) {
+  if(marker) {
+    if(isSelected) {
+      marker.setIcon(this.selectedIcon);
+    } else if(isFavorite) {
+      marker.setIcon(this.favoriteIcon);
+    } else if(isUpdated) {
+      marker.setIcon(this.updatedIcon);
+    } else {
+      marker.setIcon(this.icon);
+    }
+  }
+}
+
+MapDisplay.prototype.selectMarker = function(stationId) {
+  this.setMarkerIcon(this.selectedMarker, false, false, false);
+
+  this.selectedMarker = this.findMarker(stationId);
+  this.setMarkerIcon(this.selectedMarker, true, false, false);
 }
 
 var map = new Map();
@@ -145,6 +217,7 @@ function listStations(allStations) {
 
 function showStationDetails(stationId){
   var station = map.findStation(stationId);
+  mapDisplay.selectMarker(stationId);
 
   if(station) {
     $("#station-id").html(station.id)
@@ -192,29 +265,10 @@ function stationClick(event) {
   }
 }
 
-function drawStationMarkers(mapDisplay, stations, selectedIcon, favoriteIcon, updatedIcon, normalIcon) {
-  for(var i = 0; i < stations.length; i++) {
-    var markerIcon = normalIcon;
-    if(stations[i].selected) {
-      markerIcon = selectedIcon;
-    } else if(stations[i].favorite) {
-      markerIcon = favoriteIcon;
-    } else if(stations[i].updated) {
-      markerIcon = updatedIcon;
-    }
-
-    var marker = L.marker(stations[i].intersection, {icon: markerIcon});
-    marker.station_id = stations[i].id
-    marker.addTo(mapDisplay).on("click", stationClick);
-  }
-}
-
 $(function() {
   var portlandDowntown = [45.523360, -122.681237];
   map.setCenter(portlandDowntown);
   map.setZoom(15);
-
-  mapDisplay.initialize("mapid", map.getCenter(), map.getZoom());
 
   var stationsData = [station0Data, station1Data, station2Data, station3Data, station4Data];
   var bikesData = [station0BikeData, station1BikeData, station2BikeData, station3BikeData, station4BikeData];
@@ -224,8 +278,10 @@ $(function() {
     station.setBikeData(bikesData[i]);
     map.addStation(station);
   }
+  listStations(map.stations);
 
-  listStations(map.stations)
+  mapDisplay.initialize("mapid", map.getCenter(), map.getZoom());
+  mapDisplay.addStationMarkers(map.stations);
 
   $("form#input-name").submit(function(event){
     event.preventDefault();
@@ -248,10 +304,4 @@ $(function() {
     user.deleteStation(this.id);
     updateFavoriteStations();
   });
-
-  var selectedIcon = makeIcon('./img/red.png', 64, 80, 32, 80);
-  var favoriteIcon = makeIcon('./img/blue.png', 64, 80, 32, 80);
-  var updatedIcon = makeIcon('./img/yellow.png', 50, 50, 25, 25);
-  var icon = makeIcon('./img/green.png', 50, 50, 25, 25);
-  drawStationMarkers(mapDisplay.leafletMap, map.stations, selectedIcon, favoriteIcon, updatedIcon, icon);
 });
