@@ -156,6 +156,10 @@ function addToFavorites(detailsId){
   console.log("detailsId=", detailsId.text());
   var currentStation = map.findStation(detailsId.text());
   user.favoriteStations.push(currentStation);
+  $(".favorite-stations-list").show();
+  $(".users-name").html(user.name + "'s " + " ");
+  $("#favorite-stations-list-name").text(user.favoriteStations[0].name);
+  console.log(user.favoriteStations.name);
 
   // if(detailsId === station.id){
   //   user.favoriteStations.push(detailsId);
