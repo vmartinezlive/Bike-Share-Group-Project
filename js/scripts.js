@@ -134,8 +134,8 @@ function attachStationListeners(){
   });
 }
 
-function showStationDetails(stationMatch){
-  var station = map.findStation(stationMatch)
+function showStationDetails(stationId){
+  var station = map.findStation(stationId);
 
   $("#station-id").html(station.id)
   $(".station-name").html(station.name)
@@ -183,23 +183,25 @@ function makeIcon() {
   return greenIcon;
 }
 
-function drawStationMarkers(mapDisplay, stations, selectedIcon, updatedIcon, icon) {
-  for(var i = 0; i < stations.length; i++) {
-      if (stations[i].updated) {
-      L.marker(stations[i].intersection, {icon: updatedIcon}).addTo(mapDisplay);
-    } else  if (stations[i].selected) {
-      L.marker(stations[i].intersection, {icon: selectedIcon}).addTo(mapDisplay);
-    } else {
-      L.marker(stations[i].intersection, {icon: icon}).addTo(mapDisplay);
-    }
-  }
+function stationClick(event) {
+  console.log("click", event);
+  //showStationDetails(stationId){
 }
 
+function drawStationMarkers(mapDisplay, stations, selectedIcon, updatedIcon, normalIcon) {
+  for(var i = 0; i < stations.length; i++) {
+    var markerIcon = normalIcon;
+    if(stations[i].updated) {
+      markerIcon = updatedIcon;
+    } else if(stations[i].selected) {
+      markerIcon = selectedIcon;
+    }
 
-
-
-
-
+    var marker = L.marker(stations[i].intersection, {icon: markerIcon});
+    marker.station_id = stations[i].id
+    marker.addTo(mapDisplay).on("click", stationClick);
+  }
+}
 
 $(function() {
   var portlandDowntown = [45.523360, -122.681237];
@@ -217,7 +219,6 @@ $(function() {
     map.addStation(station);
   }
 
-
   listStations(map.stations)
 
   $("form#input-name").submit(function(event){
@@ -234,5 +235,4 @@ $(function() {
   var updatedIcon = makeUpdatedIcon();
   var icon = makeIcon();
   drawStationMarkers(mapDisplay, map.stations, selectedIcon, updatedIcon, icon);
-
 });
