@@ -16,11 +16,13 @@ Station.prototype.setStationData = function(stationData) {
   this.intersection = [dataObject.lat, dataObject.lon];
 }
 
+
 Station.prototype.setBikeData = function(bikeData) {
   var dataBikeObject = JSON.parse(bikeData);
   this.bikeCount = dataBikeObject.num_bikes_available;
   this.rackCount = dataBikeObject.num_docks_available;
 }
+
 
 
 
@@ -69,6 +71,13 @@ Map.prototype.getStations = function() {
   return this.stations;
 }
 
+Map.prototype.findStation = function(id){
+  for (var i = 0; i <this.stations.length; i++){
+    if (this.stations[i].id === id) {
+      return this.stations[i];
+    }
+  }
+}
 
 // Test data
 // STATION_STATUS_GBFS: "'http://biketownpdx.socialbicycles.com/opendata/station_status.json'",
@@ -101,10 +110,37 @@ function initializeMapDisplay(center, zoom) {
   }).addTo(mapDisplay);
 }
 
+
+function listStations(allStations) {
+  var htmlForStationList = "";
+  allStations.forEach(function(station){
+  htmlForStationList += "<li id =" + station.id + ">" + station.name + "</li>";
+  });
+  $("#stations").html(htmlForStationList);
+  attachStationListeners()
+}
+
+function attachStationListeners(){
+  $("#stations").on("click", "li", function(){
+    showStationDetails(this.id);
+  });
+}
+
+function showStationDetails(stationId){
+  var station = map.findStation(stationId)
+  $(".station-name").html(station.name)
+  $(".station-address").html(station.address)
+  $(".station-bike-count").html(station.bikeCount)
+  $(".station-rack-count").html(station.rackCount)
+  $(".station-details").show();
+}
+
+
 $(function() {
   var portlandDowntown = [45.523360, -122.681237];
   map.setCenter(portlandDowntown);
   map.setZoom(15);
+
   initializeMapDisplay(map.getCenter(), map.getZoom());
 
   var stationsData = [station0Data, station1Data, station2Data, station3Data, station4Data];
@@ -116,4 +152,5 @@ $(function() {
     map.addStation(station);
     console.log(map);
   }
+
 });
