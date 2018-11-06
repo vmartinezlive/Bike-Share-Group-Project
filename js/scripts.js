@@ -151,8 +151,24 @@ function showStationDetails(stationId){
   }
 }
 
-function addToFavorites(station){
-  user.favoriteStations.push(station);
+// var displayedStationId = map.station.id
+
+function addToFavorites(detailsId){
+  console.log("detailsId=", detailsId.text());
+  var currentStation = map.findStation(detailsId.text());
+  user.favoriteStations.push(currentStation);
+  $(".favorite-stations-list").show();
+  $(".users-name").html(user.name + "'s " + " ");
+  var nameOfFavoriteStations = user.favoriteStations.name
+  appendFavoriteStations(nameOfFavoriteStations)
+
+}
+
+function appendFavoriteStations(){
+   $("#favorite-stations-list-name").empty();
+ for(i = 0; i < user.favoriteStations.length; i++){
+  $("#favorite-stations-list-name").append("<li>" + user.favoriteStations[i].name + "</li>");
+  }
 }
 
 function makeIcon(url, width, height, anchorX, anchorY) {
@@ -214,6 +230,12 @@ $(function() {
     user.name = nameInput;
   });
 
+  var detailsId = $("#station-id");
+  $("#favorite-button").click(function(){
+    console.log("working");
+    addToFavorites(detailsId);
+    // add to favorite station ul
+  });
   var selectedIcon = makeIcon('./img/red.png', 64, 80, 32, 80);
   var favoriteIcon = makeIcon('./img/blue.png', 64, 80, 32, 80);
   var updatedIcon = makeIcon('./img/yellow.png', 50, 50, 25, 25);
