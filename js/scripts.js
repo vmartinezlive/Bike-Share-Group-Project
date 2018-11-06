@@ -134,10 +134,15 @@ function attachStationListeners(){
   });
 }
 
+
+
 function showStationDetails(stationMatch){
   var station = map.findStation(stationMatch)
+  // var createIdforStationId = "<li id =" + station.id + ">" + station.id + "</li>";
 
-  $("#station-id").html(station.id)
+  $("#station-id").html(station.id);
+
+  // $("#station-id").html(station.id)
   $(".station-name").html(station.name)
   $(".station-address").html(station.address)
   $(".station-bike-count").html(station.bikeCount)
@@ -145,9 +150,26 @@ function showStationDetails(stationMatch){
   $(".station-details").show();
 }
 
-function addToFavorites(station){
-  user.favoriteStations.push(station);
+// var displayedStationId = map.station.id
+
+function addToFavorites(detailsId){
+  console.log("detailsId=", detailsId.text());
+  var currentStation = map.findStation(detailsId.text());
+  user.favoriteStations.push(currentStation);
+  $(".favorite-stations-list").show();
+  $(".users-name").html(user.name + "'s " + " ");
+  var nameOfFavoriteStations = user.favoriteStations.name
+  appendFavoriteStations(nameOfFavoriteStations)
+
 }
+
+function appendFavoriteStations(){
+   $("#favorite-stations-list-name").empty();
+ for(i = 0; i < user.favoriteStations.length; i++){
+  $("#favorite-stations-list-name").append("<li>" + user.favoriteStations[i].name + "</li>");
+  }
+}
+
 
 function makeSelectedIcon() {
   var redIcon = L.icon({
@@ -195,12 +217,6 @@ function drawStationMarkers(mapDisplay, stations, selectedIcon, updatedIcon, ico
   }
 }
 
-
-
-
-
-
-
 $(function() {
   var portlandDowntown = [45.523360, -122.681237];
   map.setCenter(portlandDowntown);
@@ -225,6 +241,15 @@ $(function() {
     var nameInput = $("#name").val();
     user.name = nameInput;
   });
+
+  var detailsId = $("#station-id");
+  $("#favorite-button").click(function(){
+    console.log("working");
+    addToFavorites(detailsId);
+    // add to favorite station ul
+  });
+
+
 
   map.stations[0].selected = true;
   map.stations[4].selected = true;
