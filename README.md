@@ -38,15 +38,21 @@ If you have any issues or questions, please email me at paw145@humboldt.edu
 6. Users favorite stations are selected on the map.
 7. User clicks on station on the map and details about that station appear below the form.
 8. Gather station id from map click and return station information.
+9. User adds to favorites with add button
 
 ### Good to have:
-1. User can create an account and save their favorites.
+1. Use custom icon for stations.
 2. Use complete Biketown data.
-3. Add pop-up feature to map when station is clicked.
+3. Improve styling.
+4. Test all functionality
+
+### Nice to have:
+1. Add pop-up feature to map when station is clicked.
+2. Use better tiles
+3. User can create an account and save their favorites.
 4. Add reserve functionality.
-5. Improve styling.
-6. Use better tiles
-7. Use custom icon for stations.
+
+
 
 ## Technologies used
 1. **Custom CSS**

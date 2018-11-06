@@ -5,7 +5,9 @@ function Station (){
   this.id = 0,
   this.intersection = [0,0],
   this.bikeCount = 0,
-  this.rackCount = 0
+  this.rackCount = 0,
+  this.selected = false,
+  this.updated = false
 }
 
 Station.prototype.setStationData = function(stationData) {
@@ -16,15 +18,11 @@ Station.prototype.setStationData = function(stationData) {
   this.intersection = [dataObject.lat, dataObject.lon];
 }
 
-
 Station.prototype.setBikeData = function(bikeData) {
   var dataBikeObject = JSON.parse(bikeData);
   this.bikeCount = dataBikeObject.num_bikes_available;
   this.rackCount = dataBikeObject.num_docks_available;
 }
-
-
-
 
 // Business logic Map
 function Map (){
@@ -117,8 +115,9 @@ function initializeMapDisplay(center, zoom) {
     attribution: '&copy; <a id="home-link" target="_top" href="../">Map tiles</a> by <a target="_top" href="http://stamen.com">Stamen Design</a>, under <a target="_top" href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a>. Data by <a target="_top" href="http://openstreetmap.org">OpenStreetMap</a>, under <a target="_top" href="http://creativecommons.org/licenses/by-sa/3.0">CC BY SA</a>.',
     maxZoom: 18,
   }).addTo(mapDisplay);
-}
 
+  return mapDisplay;
+}
 
 function listStations(allStations) {
   var htmlForStationList = "";
@@ -146,6 +145,53 @@ function showStationDetails(stationMatch){
   $(".station-details").show();
 }
 
+function makeSelectedIcon() {
+  var redIcon = L.icon({
+       iconUrl: './img/red.png',
+
+      iconSize:     [64, 80], // size of the icon
+      iconAnchor:   [32, 80], // point of the icon which will correspond to marker's location
+      popupAnchor:  [32, -10] // point from which the popup should open relative to the iconAnchor
+  });
+
+  return redIcon;
+}
+
+function makeUpdatedIcon() {
+  var yellowIcon = L.icon({
+      iconUrl: './img/yellow.png',
+
+      iconSize: [50, 50],
+      iconAnchor: [25, 25],
+      popupAnchor: [25, -10]
+  });
+  return yellowIcon;
+}
+
+function makeIcon() {
+  var greenIcon = L.icon({
+      iconUrl: './img/green.png',
+
+      iconSize: [50, 50],
+      iconAnchor: [25, 25],
+      popupAnchor: [25, -10]
+  });
+  return greenIcon;
+}
+
+function drawStationMarkers(mapDisplay, stations, selectedIcon, updatedIcon, icon) {
+  for(var i = 0; i < stations.length; i++) {
+      if (stations[i].updated) {
+      L.marker(stations[i].intersection, {icon: updatedIcon}).addTo(mapDisplay);
+    } else  if (stations[i].selected) {
+      L.marker(stations[i].intersection, {icon: selectedIcon}).addTo(mapDisplay);
+    } else {
+      L.marker(stations[i].intersection, {icon: icon}).addTo(mapDisplay);
+    }
+  }
+}
+
+
 
 
 
@@ -156,7 +202,7 @@ $(function() {
   map.setCenter(portlandDowntown);
   map.setZoom(15);
 
-  initializeMapDisplay(map.getCenter(), map.getZoom());
+  var mapDisplay = initializeMapDisplay(map.getCenter(), map.getZoom());
 
   var stationsData = [station0Data, station1Data, station2Data, station3Data, station4Data];
   var bikesData = [station0BikeData, station1BikeData, station2BikeData, station3BikeData, station4BikeData];
@@ -167,6 +213,7 @@ $(function() {
     map.addStation(station);
   }
 
+
   listStations(map.stations)
 
   $("form#input-name").submit(function(event){
@@ -174,4 +221,14 @@ $(function() {
     var nameInput = $("#name").val();
     user.name = nameInput;
   });
+
+  map.stations[0].selected = true;
+  map.stations[4].selected = true;
+  map.stations[2].updated = true;
+  map.stations[1].updated = true;
+  var selectedIcon = makeSelectedIcon();
+  var updatedIcon = makeUpdatedIcon();
+  var icon = makeIcon();
+  drawStationMarkers(mapDisplay, map.stations, selectedIcon, updatedIcon, icon);
+
 });
