@@ -170,18 +170,25 @@ MapDisplay.prototype.findMarker = function(id){
   return false;
 }
 
-MapDisplay.prototype.setIcon = function(marker, isSelected, isFavorite, isUpdated) {
+MapDisplay.prototype.setMarkerIcon = function(marker, isSelected, isFavorite, isUpdated) {
   if(marker) {
-    //marker.setIcon();
+    if(isSelected) {
+      marker.setIcon(this.selectedIcon);
+    } else if(isFavorite) {
+      marker.setIcon(this.favoriteIcon);
+    } else if(isUpdated) {
+      marker.setIcon(this.updatedIcon);
+    } else {
+      marker.setIcon(this.icon);
+    }
   }
-  console.log("setIcon marker=", marker, "  isSelected=", isSelected);
 }
 
 MapDisplay.prototype.selectMarker = function(stationId) {
-  this.setIcon(this.selectedMarker, false, false, false);
+  this.setMarkerIcon(this.selectedMarker, false, false, false);
 
   this.selectedMarker = this.findMarker(stationId);
-  this.setIcon(this.selectedMarker, true, false, false);
+  this.setMarkerIcon(this.selectedMarker, true, false, false);
 }
 
 var map = new Map();
