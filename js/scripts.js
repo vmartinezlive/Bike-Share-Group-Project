@@ -137,12 +137,14 @@ function attachStationListeners(){
 function showStationDetails(stationId){
   var station = map.findStation(stationId);
 
-  $("#station-id").html(station.id)
-  $(".station-name").html(station.name)
-  $(".station-address").html(station.address)
-  $(".station-bike-count").html(station.bikeCount)
-  $(".station-rack-count").html(station.rackCount)
-  $(".station-details").show();
+  if(station) {
+    $("#station-id").html(station.id)
+    $(".station-name").html(station.name)
+    $(".station-address").html(station.address)
+    $(".station-bike-count").html(station.bikeCount)
+    $(".station-rack-count").html(station.rackCount)
+    $(".station-details").show();
+  }
 }
 
 function addToFavorites(station){
@@ -184,8 +186,10 @@ function makeIcon() {
 }
 
 function stationClick(event) {
-  console.log("click", event);
-  //showStationDetails(stationId){
+  var id = event && event.target && event.target.station_id;
+  if(id) {
+    showStationDetails(id);
+  }
 }
 
 function drawStationMarkers(mapDisplay, stations, selectedIcon, updatedIcon, normalIcon) {
