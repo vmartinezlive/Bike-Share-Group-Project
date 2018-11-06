@@ -158,15 +158,17 @@ function addToFavorites(detailsId){
   user.favoriteStations.push(currentStation);
   $(".favorite-stations-list").show();
   $(".users-name").html(user.name + "'s " + " ");
-  $("#favorite-stations-list-name").text(user.favoriteStations[0].name);
-  console.log(user.favoriteStations.name);
+  var nameOfFavoriteStations = user.favoriteStations.name
+  appendFavoriteStations(nameOfFavoriteStations)
 
-  // if(detailsId === station.id){
-  //   user.favoriteStations.push(detailsId);
-  //   }
-  //   return addToFavorites;
 }
 
+function appendFavoriteStations(){
+   $("#favorite-stations-list-name").empty();
+ for(i = 0; i < user.favoriteStations.length; i++){
+  $("#favorite-stations-list-name").append("<li>" + user.favoriteStations[i].name + "</li>");
+  }
+}
 
 
 function makeSelectedIcon() {
