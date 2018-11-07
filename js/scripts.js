@@ -18,8 +18,7 @@ Station.prototype.setStationData = function(dataObject) {
   this.intersection = [dataObject.lat, dataObject.lon];
 }
 
-Station.prototype.setBikeData = function(bikeData) {
-  var dataBikeObject = JSON.parse(bikeData);
+Station.prototype.setBikeData = function(dataBikeObject) {
   this.bikeCount = dataBikeObject.num_bikes_available;
   this.rackCount = dataBikeObject.num_docks_available;
 }
@@ -68,6 +67,7 @@ Map.prototype.addStation = function(station) {
 Map.prototype.addStations = function(mapDisplay) {
   var stationUrl = "http://biketownpdx.socialbicycles.com/opendata/station_information.json";
   var bikeUrl = "http://biketownpdx.socialbicycles.com/opendata/station_status.json";
+  var that = this;
 
   var xhttp = new XMLHttpRequest();
   xhttp.onreadystatechange = function() {
@@ -77,9 +77,9 @@ Map.prototype.addStations = function(mapDisplay) {
         for(var i = 0; i < stationsObject.data.stations.length; i++) {
           var station = new Station();
           station.setStationData(stationsObject.data.stations[i]);
-          map.addStation(station);
+          that.addStation(station);
         }
-        mapDisplay.addStationMarkers(map.stations);
+        mapDisplay.addStationMarkers(that.stations);
       }
     }
   };
@@ -89,6 +89,41 @@ Map.prototype.addStations = function(mapDisplay) {
 
 Map.prototype.getStations = function() {
   return this.stations;
+}
+
+Map.prototype.addBikes = function() {
+  var bikeUrl = "http://biketownpdx.socialbicycles.com/opendata/station_status.json";
+  var that = this;
+
+  var xhttp = new XMLHttpRequest();
+  xhttp.onreadystatechange = function() {
+    if(this.readyState === 4 && this.status === 200) {
+      var bikesObject = JSON.parse(xhttp.responseText);
+      console.log(bikesObject);
+      console.log(bikesObject.data.stations);
+      console.log(that.stations);
+      if(bikesObject && bikesObject.data && bikesObject.data.stations) {
+        var countMatch = 0;
+        var countNoMatch = 0;
+        for(var i = 0; i < bikesObject.data.stations.length; i++) {
+          var station = null;
+          if(bikesObject.data.stations[i].station_id === that.stations[i].id){
+            station = that.stations[i];
+            // console.log(true, "hub ID = ", bikesObject.data.stations[i].station_id, countMatch++);
+          } else{
+            station = that.findStation(bikesObject.data.stations[i].station_id);
+            console.log(false, "hub ID = ", bikesObject.data.stations[i].station_id, countNoMatch++);
+          }
+          console.log(station);
+          if(station) {
+            station.setBikeData(bikesObject.data.stations[i]);
+          }
+        }
+      }
+    }
+  }
+  xhttp.open("GET", bikeUrl, true);
+  xhttp.send();
 }
 
 Map.prototype.findStation = function(id){
