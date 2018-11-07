@@ -117,7 +117,7 @@ Map.prototype.addBikes = function() {
   }
   xhttp.open("GET", bikeUrl, true);
   xhttp.send();
-}
+};
 
 Map.prototype.findStation = function(id){
   for (var i = 0; i < this.stations.length; i++){
@@ -227,10 +227,6 @@ MapDisplay.prototype.setMarkerIcon = function(marker, isSelected, isFavorite, is
   }
 }
 
-MapDisplay.prototype.updateIcons = function(stations) {
-  console.log("updateIcons ", this);
-}
-
 MapDisplay.prototype.selectMarker = function(stationId) {
   this.setMarkerIcon(this.selectedMarker, false, false, false);
 
@@ -309,11 +305,16 @@ $(function() {
   mapDisplay.initialize("mapid", map.getCenter(), map.getZoom());
   map.addStations(mapDisplay);
   map.addBikes();
+  setTimeout(function() {
+    listAllStations(map.stations);
+  }, 3000);
+
   setInterval(function() {
-    mapDisplay.updateIcons();
     map.addBikes();
-  }, 60000);
-  listAllStations(map.stations);
+    setTimeout(function() {
+      mapDisplay.updateIcons();
+    }, 5000);
+  }, 30000);
 
   $("form#input-name").submit(function(event){
     event.preventDefault();
