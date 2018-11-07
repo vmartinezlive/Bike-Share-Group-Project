@@ -73,7 +73,7 @@ Map.prototype.addStations = function(mapDisplay) {
     if(this.readyState === 4 && this.status === 200) {
       var stationsObject = JSON.parse(xhttp.responseText);
       if(stationsObject && stationsObject.data && stationsObject.data.stations) {
-        for(var i = 0; i < 5; i++) {
+        for(var i = 0; i < stationsObject.data.stations.length; i++) {
           var station = new Station();
           station.setStationData(stationsObject.data.stations[i]);
           that.addStation(station);
@@ -116,7 +116,7 @@ Map.prototype.addBikes = function() {
   }
   xhttp.open("GET", bikeUrl, true);
   xhttp.send();
-}
+};
 
 Map.prototype.findStation = function(id){
   for (var i = 0; i < this.stations.length; i++){
@@ -213,22 +213,16 @@ MapDisplay.prototype.findMarker = function(id){
   return false;
 }
 
-MapDisplay.prototype.setMarkerIcon = function(station) {
-  for (var i = 0; i < station.length; i++){
-    if(station[i].selected){
-      console.log(station[i]);
-      var matchedMarker = this.findMarker(station[i].id);
-      console.log(matchedMarker);
+MapDisplay.prototype.setMarkerIcon = function(stations) {
+  for (var i = 0; i < stations.length; i++){
+    if(stations[i].selected){
+      var matchedMarker = this.findMarker(stations[i].id);
       matchedMarker.setIcon(this.selectedIcon);
-    } else if (station[i].favorite){
-      console.log(station[i]);
-      var matchedMarker = this.findMarker(station[i].id);
-      console.log(matchedMarker);
+    } else if (stations[i].favorite){
+      var matchedMarker = this.findMarker(stations[i].id);
       matchedMarker.setIcon(this.favoriteIcon);
     } else {
-      console.log(station[i]);
-      var matchedMarker = this.findMarker(station[i].id);
-      console.log(matchedMarker);
+      var matchedMarker = this.findMarker(stations[i].id);
       matchedMarker.setIcon(this.icon);
     }
   }
@@ -238,12 +232,12 @@ var map = new Map();
 var user = new User();
 var mapDisplay = new MapDisplay();
 
-function listStations(allStations) {
+function listAllStations(allStations) {
   var htmlForStationList = "";
   allStations.forEach(function(station){
     htmlForStationList += "<li id =" + station.id + ">" + station.name + "</li>";
   });
-  $("ul#indvStation").html(htmlForStationList);
+  $("ul#all-stations").html(htmlForStationList);
 }
 
 function showStationDetails(stationId){
@@ -266,20 +260,20 @@ function showStationDetails(stationId){
 function addToFavorites(detailsId){
   var currentStation = map.findStation(detailsId.text());
   currentStation.favorite = true;
-  console.log(currentStation);
   user.favoriteStations.push(currentStation);
-  $(".favorite-stations-list").show();
-  $(".users-name").html(user.name + "'s " + " ");
+  $("#favorite-stations-box").show();
+  if(user.name) {
+    $(".users-name").html(user.name + "'s " + " ");
+  }
   updateFavoriteStations();
   mapDisplay.setMarkerIcon(map.stations);
 }
 
 function updateFavoriteStations() {
-
-  $("#favorite-stations-list-name").empty();
+  $("#favorite-stations-list").empty();
   for(var i = 0; i < user.favoriteStations.length; i++){
     if(user.favoriteStations[i]) {
-      $("#favorite-stations-list-name").append("<li>" + user.favoriteStations[i].name + "<input type= 'button' class='deleteButton' id='" + user.favoriteStations[i].id +"' value='Delete'>" +" </li>");
+      $("#favorite-stations-list").append("<li>" + user.favoriteStations[i].name + "<input type= 'button' class='deleteButton' id='" + user.favoriteStations[i].id +"' value='X'>" +" </li>");
     }
   }
 }
@@ -309,12 +303,19 @@ $(function() {
 
   mapDisplay.initialize("mapid", map.getCenter(), map.getZoom());
   map.addStations(mapDisplay);
-  map.addBikes();
-  setInterval(function() {
-    // mapDisplay.updateIcons();
+  setTimeout(function() {
     map.addBikes();
+  }, 3000);
+  setTimeout(function() {
+    listAllStations(map.stations);
+  }, 6000);
+
+  setInterval(function() {
+    map.addBikes();
+    setTimeout(function() {
+      mapDisplay.setMarkerIcon(map.stations);
+    }, 5000);
   }, 60000);
-  listStations(map.stations);
 
   $("form#input-name").submit(function(event){
     event.preventDefault();
@@ -328,12 +329,11 @@ $(function() {
     // add to favorite station ul
   });
 
-  $("ul#indvStation").on("click", "li", function(){
+  $("ul#all-stations").on("click", "li", function(){
     showStationDetails(this.id);
   });
 
-  $("#favorite-stations-list-name").on("click", ".deleteButton", function (){
-
+  $("#favorite-stations-list").on("click", ".deleteButton", function (){
     console.log("delete ", this.id);
     user.deleteStation(this.id);
     updateFavoriteStations();

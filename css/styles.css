@@ -1,16 +1,76 @@
+html {
+  font-family: "Lato", sans-serif;
+}
+
+header {
+  margin-left: 2%;
+  margin-bottom: 3rem;
+}
+
+h1 {
+  margin-top: 0;
+  margin-bottom: 0;
+  font-family: 'Acme', sans-serif;
+  font-size: 4rem;
+  color: #c03000;
+}
+
+h2{
+  margin-top: -1rem;
+  margin-left: 2rem;
+  color: #333;
+}
+
+h4 {
+  margin-bottom: 0.1rem;
+}
+
+input {
+  margin: 5px;
+  font-size: 1rem;
+}
+
+input[type=button],input[type=submit] {
+  background-color: #c03000;
+  border: 1px solid #801800;
+  border-radius: 2px;
+  color: #f0f0f0;
+}
+
+input[type=button].deleteButton {
+  padding: 1px;
+  margin: 1px 5px;
+  background-color: #c03000;
+  border: 1px solid #801800;
+  border-radius: 2px;
+  font-size: 0.2em;
+}
+
+ul {
+  margin-top: 0.3rem;
+}
+
 .container{
   display: flex;
   flex-direction: row;
-  margin-top: 15%;
+  justify-content: flex-start;
+  margin-left: 2%;
 }
 
 .column-left {
   flex-direction: column;
+  width: 25%;
 }
 
+#input-box {
+  padding: 5px;
+  background-color: #f8f8f8;
+  border: 1px solid #808080;
+  border-radius: 4px;
+}
 
 #mapid {
-  margin-left: 8%;
+  margin-left: 2%;
   height: 800px;
   width: 800px;
 }
@@ -18,9 +78,20 @@
 .station-details {
   display: none;
 }
- .hide-id {
-   display: none;
- }
+
+.detail {
+  margin: 0.3rem 0.3rem;
+}
+
+.label {
+  font-weight: bold;
+  color: #585858;
+}
+
+.hide-id {
+ display: none;
+}
+
 .favorite-stations-list {
   display: none;
 }
