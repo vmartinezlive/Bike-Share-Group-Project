@@ -74,7 +74,7 @@ Map.prototype.addStations = function(mapDisplay) {
     if(this.readyState === 4 && this.status === 200) {
       var stationsObject = JSON.parse(xhttp.responseText);
       if(stationsObject && stationsObject.data && stationsObject.data.stations) {
-        for(var i = 0; i < stationsObject.data.stations.length; i++) {
+        for(var i = 0; i < 5; i++) {
           var station = new Station();
           station.setStationData(stationsObject.data.stations[i]);
           that.addStation(station);
@@ -103,7 +103,7 @@ Map.prototype.addBikes = function() {
       if(bikesObject && bikesObject.data && bikesObject.data.stations && thatMap.stations) {
         for(var i = 0; i < bikesObject.data.stations.length; i++) {
           var station = null;
-          if(bikesObject.data.stations[i].station_id === thatMap.stations[i].id){
+          if(thatMap.stations[i] && bikesObject.data.stations[i].station_id === thatMap.stations[i].id){
             station = thatMap.stations[i];
           } else{
             station = thatMap.findStation(bikesObject.data.stations[i].station_id);
@@ -117,7 +117,7 @@ Map.prototype.addBikes = function() {
   }
   xhttp.open("GET", bikeUrl, true);
   xhttp.send();
-}
+};
 
 Map.prototype.findStation = function(id){
   for (var i = 0; i < this.stations.length; i++){
@@ -146,14 +146,6 @@ User.prototype.deleteStation = function(id){
   }
   return false;
 }
-
-
-// Test data
-var station0BikeData = '{"station_id":"hub_1576","num_bikes_available":5,"num_bikes_disabled":0,"num_docks_available":11,"is_installed":1,"is_renting":1,"is_returning":1,"last_reported":1541445514}';
-var station1BikeData = '{"station_id":"hub_1561","num_bikes_available":4,"num_bikes_disabled":0,"num_docks_available":13,"is_installed":1,"is_renting":1,"is_returning":1,"last_reported":1541445514}';
-var station2BikeData = '{"station_id":"hub_1588","num_bikes_available":8,"num_bikes_disabled":0,"num_docks_available":10,"is_installed":1,"is_renting":1,"is_returning":1,"last_reported":1541445514}';
-var station3BikeData = '{"station_id":"hub_1535","num_bikes_available":5,"num_bikes_disabled":0,"num_docks_available":11,"is_installed":1,"is_renting":1,"is_returning":1,"last_reported":1541445514}';
-var station4BikeData = '{"station_id":"hub_1563","num_bikes_available":5,"num_bikes_disabled":0,"num_docks_available":9,"is_installed":1,"is_renting":1,"is_returning":1,"last_reported":1541445514}';
 
 
 // User interface logic
@@ -235,10 +227,6 @@ MapDisplay.prototype.setMarkerIcon = function(marker, isSelected, isFavorite, is
   }
 }
 
-MapDisplay.prototype.updateIcons = function(stations) {
-  console.log("updateIcons ", this);
-}
-
 MapDisplay.prototype.selectMarker = function(stationId) {
   this.setMarkerIcon(this.selectedMarker, false, false, false);
 
@@ -250,12 +238,12 @@ var map = new Map();
 var user = new User();
 var mapDisplay = new MapDisplay();
 
-function listStations(allStations) {
+function listAllStations(allStations) {
   var htmlForStationList = "";
   allStations.forEach(function(station){
     htmlForStationList += "<li id =" + station.id + ">" + station.name + "</li>";
   });
-  $("ul#indvStation").html(htmlForStationList);
+  $("ul#all-stations").html(htmlForStationList);
 }
 
 function showStationDetails(stationId){
@@ -275,17 +263,18 @@ function showStationDetails(stationId){
 function addToFavorites(detailsId){
   var currentStation = map.findStation(detailsId.text());
   user.favoriteStations.push(currentStation);
-  $(".favorite-stations-list").show();
-  $(".users-name").html(user.name + "'s " + " ");
+  $("#favorite-stations-box").show();
+  if(user.name) {
+    $(".users-name").html(user.name + "'s " + " ");
+  }
   updateFavoriteStations();
 }
 
 function updateFavoriteStations() {
-
-  $("#favorite-stations-list-name").empty();
+  $("#favorite-stations-list").empty();
   for(var i = 0; i < user.favoriteStations.length; i++){
     if(user.favoriteStations[i]) {
-      $("#favorite-stations-list-name").append("<li>" + user.favoriteStations[i].name + "<input type= 'button' class='deleteButton' id='" + user.favoriteStations[i].id +"' value='Delete'>" +" </li>");
+      $("#favorite-stations-list").append("<li>" + user.favoriteStations[i].name + "<input type= 'button' class='deleteButton' id='" + user.favoriteStations[i].id +"' value='X'>" +" </li>");
     }
   }
 }
@@ -316,11 +305,16 @@ $(function() {
   mapDisplay.initialize("mapid", map.getCenter(), map.getZoom());
   map.addStations(mapDisplay);
   map.addBikes();
+  setTimeout(function() {
+    listAllStations(map.stations);
+  }, 3000);
+
   setInterval(function() {
-    mapDisplay.updateIcons();
     map.addBikes();
-  }, 60000);
-  listStations(map.stations);
+    setTimeout(function() {
+      mapDisplay.updateIcons();
+    }, 5000);
+  }, 30000);
 
   $("form#input-name").submit(function(event){
     event.preventDefault();
@@ -334,11 +328,11 @@ $(function() {
     // add to favorite station ul
   });
 
-  $("ul#indvStation").on("click", "li", function(){
+  $("ul#all-stations").on("click", "li", function(){
     showStationDetails(this.id);
   });
 
-  $("#favorite-stations-list-name").on("click", ".deleteButton", function (){
+  $("#favorite-stations-list").on("click", ".deleteButton", function (){
     console.log("delete ", this.id);
     user.deleteStation(this.id);
     updateFavoriteStations();
