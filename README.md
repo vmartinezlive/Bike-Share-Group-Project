@@ -46,6 +46,7 @@ If you have any issues or questions, please email me at paw145@humboldt.edu
 ### Good to have:
 1. Use custom icon for stations.
 2. Use complete Biketown data.
+3. Update bike data every minute.
 3. Improve styling.
 4. Test all functionality.
 
