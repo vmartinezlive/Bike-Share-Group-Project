@@ -66,7 +66,6 @@ Map.prototype.addStation = function(station) {
 
 Map.prototype.addStations = function(mapDisplay) {
   var stationUrl = "http://biketownpdx.socialbicycles.com/opendata/station_information.json";
-  var bikeUrl = "http://biketownpdx.socialbicycles.com/opendata/station_status.json";
   var that = this;
 
   var xhttp = new XMLHttpRequest();
@@ -74,7 +73,7 @@ Map.prototype.addStations = function(mapDisplay) {
     if(this.readyState === 4 && this.status === 200) {
       var stationsObject = JSON.parse(xhttp.responseText);
       if(stationsObject && stationsObject.data && stationsObject.data.stations) {
-        for(var i = 0; i < 5; i++) {
+        for(var i = 0; i < stationsObject.data.stations.length; i++) {
           var station = new Station();
           station.setStationData(stationsObject.data.stations[i]);
           that.addStation(station);
@@ -103,7 +102,7 @@ Map.prototype.addBikes = function() {
       if(bikesObject && bikesObject.data && bikesObject.data.stations && thatMap.stations) {
         for(var i = 0; i < bikesObject.data.stations.length; i++) {
           var station = null;
-          if(thatMap.stations[i] && bikesObject.data.stations[i].station_id === thatMap.stations[i].id){
+          if(thatMap.stations[i] && (bikesObject.data.stations[i].station_id === thatMap.stations[i].id)) {
             station = thatMap.stations[i];
           } else{
             station = thatMap.findStation(bikesObject.data.stations[i].station_id);
@@ -135,10 +134,13 @@ function User(){
   this.favoriteStations = [];
 }
 
-User.prototype.deleteStation = function(id){
-  for(var i = 0; i < this.favoriteStations.length; i++){
+User.prototype.deleteStation = function(id) {
+  for(var i = 0; i < this.favoriteStations.length; i++) {
     if (this.favoriteStations[i]){
-      if (this.favoriteStations[i].id === id){
+      if (this.favoriteStations[i].id === id) {
+      var station = map.findStation(id);
+      station.favorite = false;
+        // this.favoriteStation[i].favorite = false;
         delete this.favoriteStations[i];
         return true;
       }
@@ -147,12 +149,10 @@ User.prototype.deleteStation = function(id){
   return false;
 }
 
-
 // User interface logic
 function MapDisplay(){
   this.leafletMap = null;
   this.markers = [];
-  this.selectedMarker = null;
   this.selectedIcon = null;
   this.favoriteIcon = null;
   this.updatedIcon = null;
@@ -213,25 +213,19 @@ MapDisplay.prototype.findMarker = function(id){
   return false;
 }
 
-MapDisplay.prototype.setMarkerIcon = function(marker, isSelected, isFavorite, isUpdated) {
-  if(marker) {
-    if(isSelected) {
-      marker.setIcon(this.selectedIcon);
-    } else if(isFavorite) {
-      marker.setIcon(this.favoriteIcon);
-    } else if(isUpdated) {
-      marker.setIcon(this.updatedIcon);
+MapDisplay.prototype.setMarkerIcon = function(stations) {
+  for (var i = 0; i < stations.length; i++){
+    if(stations[i].selected){
+      var matchedMarker = this.findMarker(stations[i].id);
+      matchedMarker.setIcon(this.selectedIcon);
+    } else if (stations[i].favorite){
+      var matchedMarker = this.findMarker(stations[i].id);
+      matchedMarker.setIcon(this.favoriteIcon);
     } else {
-      marker.setIcon(this.icon);
+      var matchedMarker = this.findMarker(stations[i].id);
+      matchedMarker.setIcon(this.icon);
     }
   }
-}
-
-MapDisplay.prototype.selectMarker = function(stationId) {
-  this.setMarkerIcon(this.selectedMarker, false, false, false);
-
-  this.selectedMarker = this.findMarker(stationId);
-  this.setMarkerIcon(this.selectedMarker, true, false, false);
 }
 
 var map = new Map();
@@ -247,9 +241,12 @@ function listAllStations(allStations) {
 }
 
 function showStationDetails(stationId){
+  for(var i = 0; i < map.stations.length; i++){
+    map.stations[i].selected = false;
+  }
   var station = map.findStation(stationId);
-  mapDisplay.selectMarker(stationId);
-
+  station.selected = true;
+  mapDisplay.setMarkerIcon(map.stations);
   if(station) {
     $("#station-id").html(station.id)
     $(".station-name").html(station.name)
@@ -262,12 +259,14 @@ function showStationDetails(stationId){
 
 function addToFavorites(detailsId){
   var currentStation = map.findStation(detailsId.text());
+  currentStation.favorite = true;
   user.favoriteStations.push(currentStation);
   $("#favorite-stations-box").show();
   if(user.name) {
     $(".users-name").html(user.name + "'s " + " ");
   }
   updateFavoriteStations();
+  mapDisplay.setMarkerIcon(map.stations);
 }
 
 function updateFavoriteStations() {
@@ -304,17 +303,19 @@ $(function() {
 
   mapDisplay.initialize("mapid", map.getCenter(), map.getZoom());
   map.addStations(mapDisplay);
-  map.addBikes();
+  setTimeout(function() {
+    map.addBikes();
+  }, 3000);
   setTimeout(function() {
     listAllStations(map.stations);
-  }, 3000);
+  }, 6000);
 
   setInterval(function() {
     map.addBikes();
     setTimeout(function() {
-      mapDisplay.updateIcons();
+      mapDisplay.setMarkerIcon(map.stations);
     }, 5000);
-  }, 30000);
+  }, 60000);
 
   $("form#input-name").submit(function(event){
     event.preventDefault();
@@ -336,5 +337,8 @@ $(function() {
     console.log("delete ", this.id);
     user.deleteStation(this.id);
     updateFavoriteStations();
+    mapDisplay.setMarkerIcon(map.stations);
+
+    // updateAllMarkers(map.stations);
   });
 });
