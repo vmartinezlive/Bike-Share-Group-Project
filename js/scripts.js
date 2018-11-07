@@ -93,28 +93,21 @@ Map.prototype.getStations = function() {
 
 Map.prototype.addBikes = function() {
   var bikeUrl = "http://biketownpdx.socialbicycles.com/opendata/station_status.json";
-  var that = this;
+  var thatMap = this;
 
   var xhttp = new XMLHttpRequest();
   xhttp.onreadystatechange = function() {
     if(this.readyState === 4 && this.status === 200) {
       var bikesObject = JSON.parse(xhttp.responseText);
-      console.log(bikesObject);
-      console.log(bikesObject.data.stations);
-      console.log(that.stations);
-      if(bikesObject && bikesObject.data && bikesObject.data.stations) {
-        var countMatch = 0;
-        var countNoMatch = 0;
+      console.log("addBikes ", bikesObject.last_updated);
+      if(bikesObject && bikesObject.data && bikesObject.data.stations && thatMap.stations) {
         for(var i = 0; i < bikesObject.data.stations.length; i++) {
           var station = null;
-          if(bikesObject.data.stations[i].station_id === that.stations[i].id){
-            station = that.stations[i];
-            // console.log(true, "hub ID = ", bikesObject.data.stations[i].station_id, countMatch++);
+          if(bikesObject.data.stations[i].station_id === thatMap.stations[i].id){
+            station = thatMap.stations[i];
           } else{
-            station = that.findStation(bikesObject.data.stations[i].station_id);
-            console.log(false, "hub ID = ", bikesObject.data.stations[i].station_id, countNoMatch++);
+            station = thatMap.findStation(bikesObject.data.stations[i].station_id);
           }
-          console.log(station);
           if(station) {
             station.setBikeData(bikesObject.data.stations[i]);
           }
@@ -242,6 +235,10 @@ MapDisplay.prototype.setMarkerIcon = function(marker, isSelected, isFavorite, is
   }
 }
 
+MapDisplay.prototype.updateIcons = function(stations) {
+  console.log("updateIcons ", this);
+}
+
 MapDisplay.prototype.selectMarker = function(stationId) {
   this.setMarkerIcon(this.selectedMarker, false, false, false);
 
@@ -318,6 +315,11 @@ $(function() {
 
   mapDisplay.initialize("mapid", map.getCenter(), map.getZoom());
   map.addStations(mapDisplay);
+  map.addBikes();
+  setInterval(function() {
+    mapDisplay.updateIcons();
+    map.addBikes();
+  }, 60000);
   listStations(map.stations);
 
   $("form#input-name").submit(function(event){
