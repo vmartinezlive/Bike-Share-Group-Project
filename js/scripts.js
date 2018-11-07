@@ -66,6 +66,17 @@ Map.prototype.addStation = function(station) {
   this.stations.push(station);
 }
 
+Map.prototype.addStations = function() {
+  var stationsData = [station0Data, station1Data, station2Data, station3Data, station4Data];
+  var bikesData = [station0BikeData, station1BikeData, station2BikeData, station3BikeData, station4BikeData];
+  for (var i = 0; i < stationsData.length; i++) {
+    var station = new Station();
+    station.setStationData(stationsData[i]);
+    station.setBikeData(bikesData[i]);
+    map.addStation(station);
+  }
+}
+
 Map.prototype.getStations = function() {
   return this.stations;
 }
@@ -269,15 +280,7 @@ $(function() {
   var portlandDowntown = [45.523360, -122.681237];
   map.setCenter(portlandDowntown);
   map.setZoom(15);
-
-  var stationsData = [station0Data, station1Data, station2Data, station3Data, station4Data];
-  var bikesData = [station0BikeData, station1BikeData, station2BikeData, station3BikeData, station4BikeData];
-  for (var i = 0; i < stationsData.length; i++) {
-    var station = new Station();
-    station.setStationData(stationsData[i]);
-    station.setBikeData(bikesData[i]);
-    map.addStation(station);
-  }
+  map.addStations();
   listStations(map.stations);
 
   mapDisplay.initialize("mapid", map.getCenter(), map.getZoom());
