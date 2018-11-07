@@ -11,8 +11,7 @@ function Station (){
   this.updated = false
 }
 
-Station.prototype.setStationData = function(stationData) {
-  var dataObject = JSON.parse(stationData);
+Station.prototype.setStationData = function(dataObject) {
   this.name = dataObject.name;
   this.address = dataObject.address;
   this.id = dataObject.station_id;
@@ -66,7 +65,7 @@ Map.prototype.addStation = function(station) {
   this.stations.push(station);
 }
 
-Map.prototype.addStations = function() {
+Map.prototype.addStations = function(mapDisplay) {
   var stationUrl = "http://biketownpdx.socialbicycles.com/opendata/station_information.json";
   var bikeUrl = "http://biketownpdx.socialbicycles.com/opendata/station_status.json";
 
@@ -75,7 +74,18 @@ Map.prototype.addStations = function() {
     if(this.readyState === 4 && this.status === 200) {
       var stationsObject = JSON.parse(xhttp.responseText);
       if(stationsObject && stationsObject.data && stationsObject.data.stations) {
-        console.log("object=", stationsObject.data.stations);
+        // for(var i = 0; i < stationsObject.data.stations.length; i++) {
+        //   var station = new Station();
+        //   station.setStationData(stationsObject.data.stations[i]);
+        // }
+        for(var i = 0; i < stationsObject.data.stations.length; i++) {
+          var station = new Station();
+          station.setStationData(stationsObject.data.stations[i]);
+          map.addStation(station);
+        }
+        //console.log("object=", stationsObject.data.stations);
+        //onsole.log("length=", stationsObject.data.stations.length);
+        mapDisplay.addStationMarkers(map.stations);
       }
     }
   };
@@ -295,11 +305,10 @@ $(function() {
   var portlandDowntown = [45.523360, -122.681237];
   map.setCenter(portlandDowntown);
   map.setZoom(15);
-  map.addStations();
-  listStations(map.stations);
 
   mapDisplay.initialize("mapid", map.getCenter(), map.getZoom());
-  mapDisplay.addStationMarkers(map.stations);
+  map.addStations(mapDisplay);
+  listStations(map.stations);
 
   $("form#input-name").submit(function(event){
     event.preventDefault();
