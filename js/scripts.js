@@ -74,7 +74,7 @@ Map.prototype.addStations = function(mapDisplay) {
     if(this.readyState === 4 && this.status === 200) {
       var stationsObject = JSON.parse(xhttp.responseText);
       if(stationsObject && stationsObject.data && stationsObject.data.stations) {
-        for(var i = 0; i < stationsObject.data.stations.length; i++) {
+        for(var i = 0; i < 5; i++) {
           var station = new Station();
           station.setStationData(stationsObject.data.stations[i]);
           that.addStation(station);
@@ -103,7 +103,7 @@ Map.prototype.addBikes = function() {
       if(bikesObject && bikesObject.data && bikesObject.data.stations && thatMap.stations) {
         for(var i = 0; i < bikesObject.data.stations.length; i++) {
           var station = null;
-          if(bikesObject.data.stations[i].station_id === thatMap.stations[i].id){
+          if(thatMap.stations[i] && bikesObject.data.stations[i].station_id === thatMap.stations[i].id){
             station = thatMap.stations[i];
           } else{
             station = thatMap.findStation(bikesObject.data.stations[i].station_id);
