@@ -170,10 +170,25 @@ MapDisplay.prototype.initialize = function(divId, center, zoom) {
     maxZoom: 18
   }).addTo(this.leafletMap);
 
-  this.selectedIcon = this.makeIcon('./img/red.png', 64, 80, 32, 80);
+  this.selectedIcon = this.makeIcon('./img/red.png', 35, 44, 20, 45);
   this.favoriteIcon = this.makeIcon('./img/blue.png', 30, 40, 15, 40);
   this.updatedIcon = this.makeIcon('./img/yellow.png',  25, 25, 12.5, 12.5);
   this.icon = this.makeIcon('./img/green.png', 25, 25, 12.5, 12.5);
+  var map = this.leafletMap
+  var info = L.control();
+
+  info.onAdd = function (map) {
+    this._div = L.DomUtil.create('div', 'info');
+    this.update();
+    return this._div;
+  };
+
+  info.update = function (icon) {
+    // this._div.style += "display: grid;"
+    this._div.innerHTML  = '<img src = "./img/greenicon.png">'+ '<p>Station</p>' + '<img src = "./img/yellowicon.png">' + '<p>Updated Station</p>' + '<img src = "./img/redicon.png">' + '<p>Selected Station</p>' + '<img src = "./img/blueicon.png">' + '<p>Favorite Station</p>'
+  };
+  info.addTo(map);
+
 }
 
 MapDisplay.prototype.makeIcon = function(url, width, height, anchorX, anchorY) {
@@ -344,7 +359,7 @@ $(function() {
     });
   }, 60000);
 
-  $("form#input-name").submit(function(event){
+$("form#input-name").submit(function(event){
     event.preventDefault();
     var nameInput = $("#name").val();
     user.name = nameInput;
