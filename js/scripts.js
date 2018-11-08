@@ -16,12 +16,12 @@ Station.prototype.setStationData = function(dataObject) {
   this.address = dataObject.address;
   this.id = dataObject.station_id;
   this.intersection = [dataObject.lat, dataObject.lon];
-}
+};
 
 Station.prototype.setBikeData = function(dataBikeObject) {
   this.bikeCount = dataBikeObject.num_bikes_available;
   this.rackCount = dataBikeObject.num_docks_available;
-}
+};
 
 // Business logic Map
 function Map (){
@@ -32,98 +32,63 @@ function Map (){
 
 Map.prototype.setCenter = function(latLong) {
   this.center = latLong;
-}
+};
 
 Map.prototype.getCenter = function() {
   return this.center;
-}
+};
 
 Map.prototype.setZoom = function(level) {
   this.zoomLevel = level;
-}
+};
 
 Map.prototype.getZoom = function() {
   return this.zoomLevel;
-}
-
-Map.prototype.zoomIn = function() {
-  this.zoomLevel++;
-  if(this.zoomLevel > 19) {
-    this.zoomLevel = 19;
-  }
-}
-
-Map.prototype.zoomOut = function() {
-  this.zoomLevel--;
-  if(this.zoomLevel < 0) {
-    this.zoomLevel = 0;
-  }
-}
+};
 
 Map.prototype.addStation = function(station) {
   this.stations.push(station);
-}
+};
 
-Map.prototype.addStations = function(mapDisplay) {
-  var stationUrl = "http://biketownpdx.socialbicycles.com/opendata/station_information.json";
-  var that = this;
-
-  var xhttp = new XMLHttpRequest();
-  xhttp.onreadystatechange = function() {
-    if(this.readyState === 4 && this.status === 200) {
-      var stationsObject = JSON.parse(xhttp.responseText);
-      if(stationsObject && stationsObject.data && stationsObject.data.stations) {
-        for(var i = 0; i < stationsObject.data.stations.length; i++) {
-          var station = new Station();
-          station.setStationData(stationsObject.data.stations[i]);
-          that.addStation(station);
-        }
-        mapDisplay.addStationMarkers(that.stations);
-      }
+Map.prototype.addStations = function(dataObject) {
+  if(dataObject && dataObject.data && dataObject.data.stations) {
+    for(var i = 0; i < dataObject.data.stations.length; i++) {
+      var station = new Station();
+      station.setStationData(dataObject.data.stations[i]);
+      this.addStation(station);
     }
-  };
-  xhttp.open("GET", stationUrl, true);
-  xhttp.send();
-}
+  }
+};
 
 Map.prototype.getStations = function() {
   return this.stations;
-}
+};
 
-Map.prototype.addBikes = function(isFirstTime) {
-  var bikeUrl = "http://biketownpdx.socialbicycles.com/opendata/station_status.json";
-  var thatMap = this;
+Map.prototype.addBikes = function(dataObject, isFirstTime) {
+  if(dataObject && dataObject.data && dataObject.data.stations && this.stations) {
+    for(var i = 0; i < dataObject.data.stations.length; i++) {
+      var station = null;
+      var stationId = dataObject.data.stations[i].station_id
+      if(this.stations[i] && (stationId === this.stations[i].id)) {
+        station = this.stations[i];
+      } else{
+        station = this.findStation(stationId);
+      }
 
-  var xhttp = new XMLHttpRequest();
-  xhttp.onreadystatechange = function() {
-    if(this.readyState === 4 && this.status === 200) {
-      var bikesObject = JSON.parse(xhttp.responseText);
-      if(bikesObject && bikesObject.data && bikesObject.data.stations && thatMap.stations) {
-        for(var i = 0; i < bikesObject.data.stations.length; i++) {
-          var station = null;
-          if(thatMap.stations[i] && (bikesObject.data.stations[i].station_id === thatMap.stations[i].id)) {
-            station = thatMap.stations[i];
-          } else{
-            station = thatMap.findStation(bikesObject.data.stations[i].station_id);
-          }
-          if(station) {
-            var oldBikeCount = station.bikeCount;
-            station.setBikeData(bikesObject.data.stations[i]);
-            if(!isFirstTime) {
-              if(station.bikeCount !== oldBikeCount) {
-                station.updated = true;
-                console.log(station.name + " oldCount=" + oldBikeCount + " newCount=" + station.bikeCount);
-              } else {
-                station.updated = false;
-              }
-            }
+      if(station) {
+        var oldBikeCount = station.bikeCount;
+        station.setBikeData(dataObject.data.stations[i]);
+        if(!isFirstTime) {
+          if(station.bikeCount !== oldBikeCount) {
+            station.updated = true;
+            console.log(station.name + " oldCount=" + oldBikeCount + " newCount=" + station.bikeCount);
+          } else {
+            station.updated = false;
           }
         }
       }
     }
   }
-  xhttp.open("GET", bikeUrl, true);
-  xhttp.send();
 };
 
 Map.prototype.findStation = function(id){
@@ -135,7 +100,7 @@ Map.prototype.findStation = function(id){
     }
   }
   return false;
-}
+};
 
 function User(){
   this.name = name;
@@ -155,6 +120,21 @@ User.prototype.deleteStation = function(id) {
     }
   }
   return false;
+};
+
+function requestObject(url) {
+  return new Promise(function(resolve, reject) {
+    let xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = function() {
+      if(this.readyState === 4) {
+        if(this.status === 200) {
+          resolve(JSON.parse(xhttp.responseText));
+        }
+      }
+    };
+    xhttp.open("GET", url, true);
+    xhttp.send();
+  });
 }
 
 // User interface logic
@@ -322,20 +302,25 @@ $(function() {
   map.setCenter(portlandDowntown);
   map.setZoom(15);
 
+  var stationUrl = "http://biketownpdx.socialbicycles.com/opendata/station_information.json";
+  var bikeUrl = "http://biketownpdx.socialbicycles.com/opendata/station_status.json";
+
   mapDisplay.initialize("mapid", map.getCenter(), map.getZoom());
-  map.addStations(mapDisplay);
-  setTimeout(function() {
-    map.addBikes(true);
-  }, 3000);
-  setTimeout(function() {
+  requestObject(stationUrl).then(function(dataObject) {
+    map.addStations(dataObject);
+    mapDisplay.addStationMarkers(map.stations);
     listAllStations(map.stations);
-  }, 6000);
+
+    requestObject(bikeUrl).then(function(dataObject) {
+      map.addBikes(dataObject, true);
+    });
+  });
 
   setInterval(function() {
-    map.addBikes(false);
-    setTimeout(function() {
+    requestObject(bikeUrl).then(function(dataObject) {
+      map.addBikes(dataObject, false);
       mapDisplay.setMarkerIcons(map.stations);
-    }, 5000);
+    });
   }, 60000);
 
   $("form#input-name").submit(function(event){
