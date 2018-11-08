@@ -168,9 +168,9 @@ MapDisplay.prototype.initialize = function(divId, center, zoom) {
   }).addTo(this.leafletMap);
 
   this.selectedIcon = this.makeIcon('./img/red.png', 64, 80, 32, 80);
-  this.favoriteIcon = this.makeIcon('./img/blue.png', 64, 80, 32, 80);
-  this.updatedIcon = this.makeIcon('./img/yellow.png', 50, 50, 25, 25);
-  this.icon = this.makeIcon('./img/green.png', 50, 50, 25, 25);
+  this.favoriteIcon = this.makeIcon('./img/blue.png', 30, 40, 15, 40);
+  this.updatedIcon = this.makeIcon('./img/yellow.png',  25, 25, 12.5, 12.5);
+  this.icon = this.makeIcon('./img/green.png', 25, 25, 12.5, 12.5);
 }
 
 MapDisplay.prototype.makeIcon = function(url, width, height, anchorX, anchorY) {
