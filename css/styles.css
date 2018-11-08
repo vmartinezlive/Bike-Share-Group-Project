@@ -2,7 +2,12 @@ html {
   font-family: "Lato", sans-serif;
 }
 
+body {
+  margin-top: 1em;
+}
+
 header {
+  display: inline-block;
   margin-left: 2%;
   margin-bottom: 3rem;
 }
@@ -13,6 +18,11 @@ h1 {
   font-family: 'Acme', sans-serif;
   font-size: 4rem;
   color: #c03000;
+}
+
+#image {
+  height: 5rem;
+  display: inline-block;
 }
 
 h2{
