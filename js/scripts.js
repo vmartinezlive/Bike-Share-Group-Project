@@ -169,15 +169,16 @@ function MapDisplay(){
 
 MapDisplay.prototype.initialize = function(divId, center, zoom) {
   this.leafletMap = L.map(divId).setView(center, zoom);
-  L.tileLayer('https://stamen-tiles-{s}.a.ssl.fastly.net/toner-lite/{z}/{x}/{y}.png', {
-    attribution: '&copy; <a id="home-link" target="_top" href="../">Map tiles</a> by <a target="_top" href="http://stamen.com">Stamen Design</a>, under <a target="_top" href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a>. Data by <a target="_top" href="http://openstreetmap.org">OpenStreetMap</a>, under <a target="_top" href="http://creativecommons.org/licenses/by-sa/3.0">CC BY SA</a>.',
-    maxZoom: 18,
+
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+    attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>',
+    maxZoom: 18
   }).addTo(this.leafletMap);
 
   this.selectedIcon = this.makeIcon('./img/red.png', 64, 80, 32, 80);
-  this.favoriteIcon = this.makeIcon('./img/blue.png', 64, 80, 32, 80);
-  this.updatedIcon = this.makeIcon('./img/yellow.png', 50, 50, 25, 25);
-  this.icon = this.makeIcon('./img/green.png', 50, 50, 25, 25);
+  this.favoriteIcon = this.makeIcon('./img/blue.png', 30, 40, 15, 40);
+  this.updatedIcon = this.makeIcon('./img/yellow.png',  25, 25, 12.5, 12.5);
+  this.icon = this.makeIcon('./img/green.png', 25, 25, 12.5, 12.5);
 }
 
 MapDisplay.prototype.makeIcon = function(url, width, height, anchorX, anchorY) {
