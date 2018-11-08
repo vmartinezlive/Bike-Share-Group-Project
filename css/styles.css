@@ -58,7 +58,6 @@ ul {
 }
 
 .column-left {
-  flex-direction: column;
   width: 25%;
 }
 
@@ -97,7 +96,39 @@ ul {
 .favorite-stations-list {
   display: none;
 }
+
 #all-stations-box {
   overflow-y: scroll;
   height: 450px;
+}
+
+#bottom-container{
+  display: flex;
+  flex-direction: row;
+  margin-left: 2%;
+}
+
+#empty-box{
+  width: 25%;
+}
+
+#developer-box{
+  margin-left: 2%;
+  margin-top: 1rem;
+}
+
+#developer-button{
+  margin-left: 0;
+  background-color: #606060;
+  border: 1px solid #808080;
+  border-radius: 2px;
+  color: #f8f8f8;
+}
+
+#developer-info {
+  background-color: #f8f8f8;
+  border: 1px solid #808080;
+  border-radius: 4px;
+  height: 200px;
+  width: 800px;
 }
