@@ -126,9 +126,13 @@ ul {
 }
 
 #developer-info {
+  padding: 0.5em 1em;
+  display: none;
   background-color: #f8f8f8;
   border: 1px solid #808080;
   border-radius: 4px;
   height: 200px;
   width: 800px;
+  font-family: monospace;
+  overflow-y: scroll;
 }
