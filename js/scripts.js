@@ -66,6 +66,9 @@ Map.prototype.getStations = function() {
 
 Map.prototype.addBikes = function(dataObject, isFirstTime) {
   if(dataObject && dataObject.data && dataObject.data.stations && this.stations) {
+    if(!isFirstTime) {
+      console.log("Bike changes:");
+    }
     for(var i = 0; i < dataObject.data.stations.length; i++) {
       var station = null;
       var stationId = dataObject.data.stations[i].station_id
@@ -81,7 +84,9 @@ Map.prototype.addBikes = function(dataObject, isFirstTime) {
         if(!isFirstTime) {
           if(station.bikeCount !== oldBikeCount) {
             station.updated = true;
-            console.log(station.name + " oldCount=" + oldBikeCount + " newCount=" + station.bikeCount);
+            var bikeDiff = station.bikeCount - oldBikeCount;
+            var addedText = (bikeDiff > 0 ? bikeDiff + " bikes added" : -bikeDiff + " bikes removed");
+            console.log(station.name + " old-bike-count=" + oldBikeCount + ", new-bike-count=" + station.bikeCount + ", " + addedText);
           } else {
             station.updated = false;
           }
@@ -138,6 +143,16 @@ function requestObject(url) {
 }
 
 // User interface logic
+function captureConsoleLog(captureDiv) {
+  let oldConsoleLog = console.log;
+
+  console.log = function(message) {
+    captureDiv.innerHTML += "<div>" + message + "</div>";
+    captureDiv.scrollTop = captureDiv.scrollHeight;
+    oldConsoleLog.apply(console, arguments);
+  };
+}
+
 function MapDisplay(){
   this.leafletMap = null;
   this.markers = [];
@@ -298,6 +313,12 @@ function stationClick(event) {
 }
 
 $(function() {
+  var developerInfo = document.getElementById("developer-info");
+  $("#developer-button").click(function() {
+    developerInfo.style.display = "block";
+  })
+  captureConsoleLog(developerInfo);
+
   var portlandDowntown = [45.523360, -122.681237];
   map.setCenter(portlandDowntown);
   map.setZoom(15);
