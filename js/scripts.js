@@ -184,7 +184,8 @@ MapDisplay.prototype.initialize = function(divId, center, zoom) {
   };
 
   info.update = function (icon) {
-    this._div.innerHTML  = '<h4>Legend</h4>' + '<img src = "./img/green.png">' +  '<p>Station</p>' +'<img src = "./img/yellow.png">' + '<p>Updated Station</p>' + '<img src = "./img/red.png">' + '<p>Selected Station</p>' + '<img src = "./img/blue.png">' + '<p>Favorite Station</p>'
+    this._div.style += "display: flex;"
+    this._div.innerHTML  = '<h4>Legend</h4>' + '<div id= "text"' + '<p>Station</p>' + '</b>' + '<b>' +'<img src = "./img/smlyellow.png">'+ '</b>' + '<img src = "./img/smlred.png">' + '<p>Selected Station</p>' + '<img src = "./img/smlblue.png">' + '<p>Favorite Station</p>'
   };
   info.addTo(map);
 
