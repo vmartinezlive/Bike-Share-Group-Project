@@ -72,7 +72,6 @@ Map.prototype.addStations = function(mapDisplay) {
   xhttp.onreadystatechange = function() {
     if(this.readyState === 4 && this.status === 200) {
       var stationsObject = JSON.parse(xhttp.responseText);
-      console.log("addStations");
       if(stationsObject && stationsObject.data && stationsObject.data.stations) {
         for(var i = 0; i < stationsObject.data.stations.length; i++) {
           var station = new Station();
@@ -99,7 +98,6 @@ Map.prototype.addBikes = function(isFirstTime) {
   xhttp.onreadystatechange = function() {
     if(this.readyState === 4 && this.status === 200) {
       var bikesObject = JSON.parse(xhttp.responseText);
-      console.log("addBikes ", bikesObject.last_updated, isFirstTime);
       if(bikesObject && bikesObject.data && bikesObject.data.stations && thatMap.stations) {
         for(var i = 0; i < bikesObject.data.stations.length; i++) {
           var station = null;
@@ -151,6 +149,7 @@ User.prototype.deleteStation = function(id) {
         var station = map.findStation(id);
         station.favorite = false;
         delete this.favoriteStations[i];
+        this.favoriteStations.splice(i, 1);
         return true;
       }
     }
@@ -223,7 +222,6 @@ MapDisplay.prototype.findMarker = function(id){
 }
 
 MapDisplay.prototype.setMarkerIcons = function(stations) {
-  console.log("setMarkerIcons");
   for (var i = 0; i < stations.length; i++) {
     if(stations[i].selected) {
       var matchedMarker = this.findMarker(stations[i].id);
@@ -355,7 +353,6 @@ $(function() {
   });
 
   $("#favorite-stations-list").on("click", ".deleteButton", function (){
-    console.log("delete ", this.id);
     user.deleteStation(this.id);
     updateFavoriteStations();
     mapDisplay.setMarkerIcons(map.stations);
