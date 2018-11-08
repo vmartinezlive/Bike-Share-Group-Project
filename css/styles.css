@@ -78,16 +78,17 @@ ul {
 .station-details {
   padding-top: 1em;
   display: none;
-  height: 11em;
+  height: 14em;
+  font-size: 0.9em;
 }
 
 #logo-div {
   background-image: url('../img/logo.png');
-  background-size: 50%;
+  background-size: 120px;
   background-position: 35% 50%;
   background-repeat: no-repeat;
   padding-top: 1em;
-  height: 11em;
+  height: 14em;
 }
 
 .detail {
@@ -107,9 +108,14 @@ ul {
   display: none;
 }
 
+#favorite-scroll-box{
+  overflow-y: scroll;
+  height: 100px;
+}
+
 #all-stations-box {
   overflow-y: scroll;
-  height: 450px;
+  height: 345px;
 }
 
 #bottom-container{

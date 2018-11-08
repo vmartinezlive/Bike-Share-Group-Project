@@ -276,7 +276,7 @@ function addToFavorites(detailsId){
     }
   }
   if(!isAlreadyPresent) {
-    user.favoriteStations.push(currentStation);
+    user.favoriteStations.unshift(currentStation);
     $("#favorite-stations-box").show();
     if(user.name) {
       $(".users-name").html(user.name + "'s " + " ");
