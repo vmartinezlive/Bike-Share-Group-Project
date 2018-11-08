@@ -90,7 +90,7 @@ Map.prototype.getStations = function() {
   return this.stations;
 }
 
-Map.prototype.addBikes = function() {
+Map.prototype.addBikes = function(isFirstTime) {
   var bikeUrl = "http://biketownpdx.socialbicycles.com/opendata/station_status.json";
   var thatMap = this;
 
@@ -98,7 +98,6 @@ Map.prototype.addBikes = function() {
   xhttp.onreadystatechange = function() {
     if(this.readyState === 4 && this.status === 200) {
       var bikesObject = JSON.parse(xhttp.responseText);
-      console.log("addBikes ", bikesObject.last_updated);
       if(bikesObject && bikesObject.data && bikesObject.data.stations && thatMap.stations) {
         for(var i = 0; i < bikesObject.data.stations.length; i++) {
           var station = null;
@@ -108,7 +107,16 @@ Map.prototype.addBikes = function() {
             station = thatMap.findStation(bikesObject.data.stations[i].station_id);
           }
           if(station) {
+            var oldBikeCount = station.bikeCount;
             station.setBikeData(bikesObject.data.stations[i]);
+            if(!isFirstTime) {
+              if(station.bikeCount !== oldBikeCount) {
+                station.updated = true;
+                console.log(station.name + " oldCount=" + oldBikeCount + " newCount=" + station.bikeCount);
+              } else {
+                station.updated = false;
+              }
+            }
           }
         }
       }
@@ -138,10 +146,10 @@ User.prototype.deleteStation = function(id) {
   for(var i = 0; i < this.favoriteStations.length; i++) {
     if (this.favoriteStations[i]){
       if (this.favoriteStations[i].id === id) {
-      var station = map.findStation(id);
-      station.favorite = false;
-        // this.favoriteStation[i].favorite = false;
+        var station = map.findStation(id);
+        station.favorite = false;
         delete this.favoriteStations[i];
+        this.favoriteStations.splice(i, 1);
         return true;
       }
     }
@@ -214,14 +222,17 @@ MapDisplay.prototype.findMarker = function(id){
   return false;
 }
 
-MapDisplay.prototype.setMarkerIcon = function(stations) {
-  for (var i = 0; i < stations.length; i++){
-    if(stations[i].selected){
+MapDisplay.prototype.setMarkerIcons = function(stations) {
+  for (var i = 0; i < stations.length; i++) {
+    if(stations[i].selected) {
       var matchedMarker = this.findMarker(stations[i].id);
       matchedMarker.setIcon(this.selectedIcon);
-    } else if (stations[i].favorite){
+    } else if (stations[i].favorite) {
       var matchedMarker = this.findMarker(stations[i].id);
       matchedMarker.setIcon(this.favoriteIcon);
+    } else if (stations[i].updated) {
+      var matchedMarker = this.findMarker(stations[i].id);
+      matchedMarker.setIcon(this.updatedIcon);
     } else {
       var matchedMarker = this.findMarker(stations[i].id);
       matchedMarker.setIcon(this.icon);
@@ -247,7 +258,7 @@ function showStationDetails(stationId){
   }
   var station = map.findStation(stationId);
   station.selected = true;
-  mapDisplay.setMarkerIcon(map.stations);
+  mapDisplay.setMarkerIcons(map.stations);
   if(station) {
     $("#station-id").html(station.id)
     $(".station-name").html(station.name)
@@ -261,13 +272,22 @@ function showStationDetails(stationId){
 function addToFavorites(detailsId){
   var currentStation = map.findStation(detailsId.text());
   currentStation.favorite = true;
-  user.favoriteStations.push(currentStation);
-  $("#favorite-stations-box").show();
-  if(user.name) {
-    $(".users-name").html(user.name + "'s " + " ");
+
+  var isAlreadyPresent = false;
+  for(var i = 0; i < user.favoriteStations.length; i++) {
+    if(currentStation === user.favoriteStations[i]) {
+      isAlreadyPresent = true;
+    }
   }
-  updateFavoriteStations();
-  mapDisplay.setMarkerIcon(map.stations);
+  if(!isAlreadyPresent) {
+    user.favoriteStations.push(currentStation);
+    $("#favorite-stations-box").show();
+    if(user.name) {
+      $(".users-name").html(user.name + "'s " + " ");
+    }
+    updateFavoriteStations();
+    mapDisplay.setMarkerIcons(map.stations);
+  }
 }
 
 function updateFavoriteStations() {
@@ -305,16 +325,16 @@ $(function() {
   mapDisplay.initialize("mapid", map.getCenter(), map.getZoom());
   map.addStations(mapDisplay);
   setTimeout(function() {
-    map.addBikes();
+    map.addBikes(true);
   }, 3000);
   setTimeout(function() {
     listAllStations(map.stations);
   }, 6000);
 
   setInterval(function() {
-    map.addBikes();
+    map.addBikes(false);
     setTimeout(function() {
-      mapDisplay.setMarkerIcon(map.stations);
+      mapDisplay.setMarkerIcons(map.stations);
     }, 5000);
   }, 60000);
 
@@ -327,7 +347,6 @@ $(function() {
   var detailsId = $("#station-id");
   $("#favorite-button").click(function(){
     addToFavorites(detailsId);
-    // add to favorite station ul
   });
 
   $("ul#all-stations").on("click", "li", function(){
@@ -335,11 +354,8 @@ $(function() {
   });
 
   $("#favorite-stations-list").on("click", ".deleteButton", function (){
-    console.log("delete ", this.id);
     user.deleteStation(this.id);
     updateFavoriteStations();
-    mapDisplay.setMarkerIcon(map.stations);
-
-    // updateAllMarkers(map.stations);
+    mapDisplay.setMarkerIcons(map.stations);
   });
 });

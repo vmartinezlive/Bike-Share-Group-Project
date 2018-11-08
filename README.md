@@ -51,13 +51,15 @@ If you have any issues or questions, please email me at paw145@humboldt.edu
 4. Test all functionality.
 
 ### Excellent to have:
-1. Add pop-up feature to map when station is clicked.
-2. Use better tiles.
-3. User can create an account and save their favorites.
-4. Add reserve functionality.
-5. Remove empty arrays in favorite stations (sort and then pop out empty arrays).
-
-
+1. Add better map tile setTimeout
+2. Resize icons for zoom level
+3. Don't allow duplicates in favorites array
+4. Pop empty slots from favorites array
+5. Show updated icon for updated stations
+6. Add popups to station markers to show intersection and address
+7. Add map legend for marker types
+8. Add screenshot to readme
+9. Deploy to gh-pages
 
 ## Technologies used
 1. **Custom CSS**
