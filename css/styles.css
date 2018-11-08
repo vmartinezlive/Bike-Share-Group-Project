@@ -22,6 +22,7 @@ h2{
 }
 
 h4 {
+  margin-top: 0;
   margin-bottom: 0.1rem;
 }
 
@@ -75,9 +76,18 @@ ul {
 }
 
 .station-details {
+  padding-top: 1em;
   display: none;
-  width: 283px;
-  height: 171px;
+  height: 11em;
+}
+
+#logo-div {
+  background-image: url('../img/logo.png');
+  background-size: 50%;
+  background-position: 35% 50%;
+  background-repeat: no-repeat;
+  padding-top: 1em;
+  height: 11em;
 }
 
 .detail {
@@ -126,12 +136,13 @@ ul {
 }
 
 #developer-info {
+  box-sizing: border-box;
   padding: 0.5em 1em;
   display: none;
   background-color: #f8f8f8;
   border: 1px solid #808080;
   border-radius: 4px;
-  height: 200px;
+  height: 150px;
   width: 800px;
   font-family: monospace;
   overflow-y: scroll;

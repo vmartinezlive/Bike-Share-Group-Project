@@ -261,6 +261,7 @@ function showStationDetails(stationId){
     $(".station-bike-count").html(station.bikeCount)
     $(".station-rack-count").html(station.rackCount)
     $(".station-details").show();
+    $("#logo-div").hide();
   }
 }
 
@@ -315,7 +316,11 @@ function stationClick(event) {
 $(function() {
   var developerInfo = document.getElementById("developer-info");
   $("#developer-button").click(function() {
-    developerInfo.style.display = "block";
+    if(developerInfo.style.display === "block") {
+      developerInfo.style.display = "none";
+    } else {
+      developerInfo.style.display = "block";
+    }
   })
   captureConsoleLog(developerInfo);
 
