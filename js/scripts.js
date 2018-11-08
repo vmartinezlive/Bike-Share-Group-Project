@@ -72,6 +72,7 @@ Map.prototype.addStations = function(mapDisplay) {
   xhttp.onreadystatechange = function() {
     if(this.readyState === 4 && this.status === 200) {
       var stationsObject = JSON.parse(xhttp.responseText);
+      console.log("addStations");
       if(stationsObject && stationsObject.data && stationsObject.data.stations) {
         for(var i = 0; i < stationsObject.data.stations.length; i++) {
           var station = new Station();
@@ -98,7 +99,7 @@ Map.prototype.addBikes = function(isFirstTime) {
   xhttp.onreadystatechange = function() {
     if(this.readyState === 4 && this.status === 200) {
       var bikesObject = JSON.parse(xhttp.responseText);
-      console.log("addBikes ", bikesObject.last_updated);
+      console.log("addBikes ", bikesObject.last_updated, isFirstTime);
       if(bikesObject && bikesObject.data && bikesObject.data.stations && thatMap.stations) {
         for(var i = 0; i < bikesObject.data.stations.length; i++) {
           var station = null;
@@ -107,14 +108,16 @@ Map.prototype.addBikes = function(isFirstTime) {
           } else{
             station = thatMap.findStation(bikesObject.data.stations[i].station_id);
           }
-          if(!isFirstTime && station) {
+          if(station) {
             var oldBikeCount = station.bikeCount;
             station.setBikeData(bikesObject.data.stations[i]);
-            if(station.bikeCount !== oldBikeCount) {
-              station.updated = true;
-              console.log(station.name + " oldCount=" + oldBikeCount + " newCount=" + station.bikeCount);
-            } else {
-              station.updated = false;
+            if(!isFirstTime) {
+              if(station.bikeCount !== oldBikeCount) {
+                station.updated = true;
+                console.log(station.name + " oldCount=" + oldBikeCount + " newCount=" + station.bikeCount);
+              } else {
+                station.updated = false;
+              }
             }
           }
         }
@@ -145,9 +148,8 @@ User.prototype.deleteStation = function(id) {
   for(var i = 0; i < this.favoriteStations.length; i++) {
     if (this.favoriteStations[i]){
       if (this.favoriteStations[i].id === id) {
-      var station = map.findStation(id);
-      station.favorite = false;
-        // this.favoriteStation[i].favorite = false;
+        var station = map.findStation(id);
+        station.favorite = false;
         delete this.favoriteStations[i];
         return true;
       }
