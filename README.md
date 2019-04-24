@@ -20,7 +20,7 @@ _You can view the deployed page [here]( https://vmartinezlive.github.io/Bike-Sha
 If you have any issues or questions, please email me at vmartinez72@live.com
 
 ## Project screenshot
-![](img\bike-tracker.jpg)
+![](img/bike-tracker.jpg)
 
 ## Specifications:
 ### MVP:
