@@ -8,16 +8,19 @@
 
 ## Description
 
-_You can view the deployed page [here](https://paigewilliams.github.io/Bike-Share-Group-Project/)._
+_You can view the deployed page [here]( https://vmartinezlive.github.io/Bike-Share-Group-Project/)._
 
 ## Setup and Installation
 
-* Clone the project from https://github.com/paigewilliams/Bike-Share-Group-Project.git to a local directory
+* Clone the project from https://github.com/vmartinezlive/Bike-Share-Group-Project.git to a local directory
 * Open index.html in a browser
 
 ## Support and Contact Details
 
-If you have any issues or questions, please email me at paw145@humboldt.edu
+If you have any issues or questions, please email me at vmartinez72@live.com
+
+## Project screenshot
+![](img\bike-tracker.jpg)
 
 ## Specifications:
 ### MVP:
