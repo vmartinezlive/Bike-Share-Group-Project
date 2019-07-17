@@ -8,7 +8,7 @@
 
 ## Description
 
-_You can view the deployed page [here]( https://vmartinezlive.github.io/Bike-Share-Group-Project/)._
+_You can view the deployed page [here]( https://paigewilliams.github.io/bike-share/)._
 
 ## Setup and Installation
 
